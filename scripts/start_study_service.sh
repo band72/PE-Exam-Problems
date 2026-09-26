@@ -3,7 +3,7 @@
 # Starts the background node service and opens the study portal bookmark in the browser
 
 PORT=3000
-BOOKMARK_URL="http://localhost:${PORT}/#bookmarks"
+BOOKMARK_URL="http://localhost:${PORT}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 

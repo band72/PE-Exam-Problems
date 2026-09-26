@@ -79,6 +79,13 @@ async function initApp() {
   setupEventListeners();
   updateStatsBanner();
   updateStartWithBookmarkBtn();
+
+  // Reset search box on initial load unless query param 'q' is explicitly given
+  const searchEl = document.getElementById('searchInput');
+  if (searchEl && !window.location.search.includes('q=')) {
+    searchEl.value = '';
+  }
+
   applyBookmarkUrlOrPreference();
   renderProblemGrid();
 
@@ -89,15 +96,26 @@ async function initApp() {
 function applyBookmarkUrlOrPreference() {
   const hash = window.location.hash ? window.location.hash.trim().toLowerCase() : '';
   const params = new URLSearchParams(window.location.search);
+  const statusSelect = document.getElementById('statusFilterSelect');
+
+  const bookmarkedCount = Object.keys(userState.favorites || {}).filter(k => userState.favorites[k]).length;
 
   // 1. Direct bookmark filter via URL (#bookmarks, #favorites, ?filter=bookmarks, ?status=FAVORITES)
   // or user preference startWithBookmarks
   if (hash === '#bookmarks' || hash === '#favorites' || params.get('filter') === 'bookmarks' || params.get('status') === 'FAVORITES') {
-    const statusSelect = document.getElementById('statusFilterSelect');
+    if (bookmarkedCount > 0) {
+      if (statusSelect) statusSelect.value = 'FAVORITES';
+    } else {
+      // If no bookmarks exist yet, do NOT show an empty screen! Default to ALL
+      if (statusSelect) statusSelect.value = 'ALL';
+      history.replaceState(null, null, window.location.pathname + (window.location.search || ''));
+    }
+  } else if (userState.startWithBookmarks && bookmarkedCount > 0) {
     if (statusSelect) statusSelect.value = 'FAVORITES';
-  } else if (userState.startWithBookmarks && Object.keys(userState.favorites).some(k => userState.favorites[k])) {
-    const statusSelect = document.getElementById('statusFilterSelect');
-    if (statusSelect) statusSelect.value = 'FAVORITES';
+  } else {
+    if (statusSelect && statusSelect.value === 'FAVORITES' && bookmarkedCount === 0) {
+      statusSelect.value = 'ALL';
+    }
   }
 
   // 2. Query param for series (?series=Water+Resources, etc.)
@@ -354,12 +372,31 @@ function renderProblemGrid() {
   const activeSeries = activeSeriesTab ? activeSeriesTab.dataset.series : 'ALL';
 
   if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-        <p style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔍 No matching problems found</p>
-        <p>Try clearing your search query or selecting a different topic filter.</p>
-      </div>
-    `;
+    const activeStatus = document.getElementById('statusFilterSelect').value;
+    if (activeStatus === 'FAVORITES') {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem;">
+          <div style="font-size: 3rem; margin-bottom: 0.75rem;">⭐</div>
+          <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);">No Bookmarked Problems Yet</h3>
+          <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+            You haven't bookmarked any problems yet. Click the star icon (☆) on any problem card to save it for quick review!
+          </p>
+          <button class="btn btn-primary" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.6rem 1.25rem;">
+            📚 Show All 129 Problems
+          </button>
+        </div>
+      `;
+    } else {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+          <p style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔍 No matching problems found</p>
+          <p style="margin-bottom: 1.25rem;">Try clearing your search query or selecting a different topic filter.</p>
+          <button class="btn btn-primary" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.6rem 1.25rem;">
+            📚 Reset All Filters & View All Problems
+          </button>
+        </div>
+      `;
+    }
     return;
   }
 
@@ -1128,5 +1165,28 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+window.showAllProblems = function() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
+
+  const statusSelect = document.getElementById('statusFilterSelect');
+  if (statusSelect) statusSelect.value = 'ALL';
+
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  const allTopic = document.querySelector('.filter-pill[data-topic="ALL"]');
+  if (allTopic) allTopic.classList.add('active');
+
+  document.querySelectorAll('.series-tab').forEach(t => t.classList.remove('active'));
+  const allTab = document.querySelector('.series-tab[data-series="ALL"]');
+  if (allTab) allTab.classList.add('active');
+
+  userState.startWithBookmarks = false;
+  saveUserState();
+  updateStartWithBookmarkBtn();
+
+  history.replaceState(null, null, window.location.pathname);
+  renderProblemGrid();
+};
 
 document.addEventListener('DOMContentLoaded', initApp);
