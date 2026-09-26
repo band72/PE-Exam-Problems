@@ -14,8 +14,18 @@ let userState = {
   statuses: {}, // id -> 'UNATTEMPTED' | 'MASTERED' | 'REVIEW'
   theme: 'dark',
   preferredVideoSource: 'youtube-hd', // 'youtube-hd' (1080p Full HD) or 'local' (offline)
-  theaterMode: false
+  theaterMode: false,
+  startWithBookmarks: false
 };
+
+function updateStartWithBookmarkBtn() {
+  const btn = document.getElementById('startWithBookmarkToggle');
+  const txt = document.getElementById('startWithBookmarkStatus');
+  if (!btn || !txt) return;
+  const active = !!userState.startWithBookmarks;
+  txt.textContent = active ? 'ON' : 'OFF';
+  btn.classList.toggle('btn-primary', active);
+}
 
 // Load saved user state
 function loadUserState() {
@@ -68,10 +78,55 @@ async function initApp() {
 
   setupEventListeners();
   updateStatsBanner();
+  updateStartWithBookmarkBtn();
+  applyBookmarkUrlOrPreference();
   renderProblemGrid();
 
   // Periodically refresh local video status if downloads are progressing
   setInterval(checkLocalVideosStatus, 8000);
+}
+
+function applyBookmarkUrlOrPreference() {
+  const hash = window.location.hash ? window.location.hash.trim().toLowerCase() : '';
+  const params = new URLSearchParams(window.location.search);
+
+  // 1. Direct bookmark filter via URL (#bookmarks, #favorites, ?filter=bookmarks, ?status=FAVORITES)
+  // or user preference startWithBookmarks
+  if (hash === '#bookmarks' || hash === '#favorites' || params.get('filter') === 'bookmarks' || params.get('status') === 'FAVORITES') {
+    const statusSelect = document.getElementById('statusFilterSelect');
+    if (statusSelect) statusSelect.value = 'FAVORITES';
+  } else if (userState.startWithBookmarks && Object.keys(userState.favorites).some(k => userState.favorites[k])) {
+    const statusSelect = document.getElementById('statusFilterSelect');
+    if (statusSelect) statusSelect.value = 'FAVORITES';
+  }
+
+  // 2. Query param for series (?series=Water+Resources, etc.)
+  const seriesParam = params.get('series');
+  if (seriesParam) {
+    const tab = document.querySelector(`.series-tab[data-series="${seriesParam}"]`);
+    if (tab) {
+      document.querySelectorAll('.series-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    }
+  }
+
+  // 3. Deep-link bookmark to a specific problem: #problem-52, #52, #WR-12, #wr12
+  if (hash && hash !== '#bookmarks' && hash !== '#favorites') {
+    const cleanHash = hash.replace(/^#(?:problem-)?/, '').replace(/^#/, '');
+    const found = allProblems.find(p => {
+      if (p.id && p.id.toLowerCase() === cleanHash) return true;
+      if (String(p.problem_number) === cleanHash) return true;
+      if (p.wr_number && `wr${p.wr_number}` === cleanHash.replace(/[^a-z0-9]/g, '')) return true;
+      if (p.env_number && `env${p.env_number}` === cleanHash.replace(/[^a-z0-9]/g, '')) return true;
+      if (p.breadth_number && `breadth${p.breadth_number}` === cleanHash.replace(/[^a-z0-9]/g, '')) return true;
+      return false;
+    });
+    if (found) {
+      setTimeout(() => {
+        openProblemModal(found);
+      }, 100);
+    }
+  }
 }
 
 async function checkLocalVideosStatus() {
@@ -401,12 +456,17 @@ function renderProblemGrid() {
 }
 
 // Modal View
-function openProblemModal(problemId) {
-  const p = allProblems.find(item => item.id === problemId);
+function openProblemModal(problemIdOrObj) {
+  const p = (typeof problemIdOrObj === 'object' && problemIdOrObj && problemIdOrObj.id) 
+    ? problemIdOrObj 
+    : allProblems.find(item => item.id === problemIdOrObj);
   if (!p) return;
 
   currentModalProblem = p;
   modalSolutionVisible = !practiceMode;
+
+  // Update URL hash for easy bookmarking
+  history.replaceState(null, null, `#problem-${p.problem_number}`);
 
   const modal = document.getElementById('problemModal');
   modal.classList.add('open');
@@ -726,6 +786,14 @@ function closeProblemModal() {
   const container = document.getElementById('videoContainer');
   container.innerHTML = '';
   currentModalProblem = null;
+
+  // Restore bookmark hash if currently filtering by favorites, otherwise clear
+  const activeStatus = document.getElementById('statusFilterSelect').value;
+  if (activeStatus === 'FAVORITES') {
+    history.replaceState(null, null, '#bookmarks');
+  } else {
+    history.replaceState(null, null, window.location.pathname + window.location.search);
+  }
 }
 
 function toggleFavorite(problemId, event) {
@@ -959,6 +1027,96 @@ function setupEventListeners() {
   document.getElementById('prevProbBtn').addEventListener('click', () => navigateProblem(-1));
   document.getElementById('nextProbBtn').addEventListener('click', () => navigateProblem(1));
   document.getElementById('copySolutionBtn').addEventListener('click', copyCurrentSolution);
+
+  // Bookmark direct link copier
+  const copyBookmarkBtn = document.getElementById('modalCopyBookmarkBtn');
+  if (copyBookmarkBtn) {
+    copyBookmarkBtn.addEventListener('click', () => {
+      if (!currentModalProblem) return;
+      const url = `${window.location.origin}/#problem-${currentModalProblem.problem_number}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          const orig = copyBookmarkBtn.textContent;
+          copyBookmarkBtn.textContent = '✓ Link Copied!';
+          copyBookmarkBtn.classList.add('btn-primary');
+          setTimeout(() => {
+            copyBookmarkBtn.textContent = orig;
+            copyBookmarkBtn.classList.remove('btn-primary');
+          }, 2000);
+        }).catch(() => {
+          prompt('Copy bookmark URL:', url);
+        });
+      } else {
+        prompt('Copy bookmark URL:', url);
+      }
+    });
+  }
+
+  // Start with Bookmarks toggle
+  const bookmarkToggleBtn = document.getElementById('startWithBookmarkToggle');
+  if (bookmarkToggleBtn) {
+    bookmarkToggleBtn.addEventListener('click', () => {
+      userState.startWithBookmarks = !userState.startWithBookmarks;
+      saveUserState();
+      updateStartWithBookmarkBtn();
+      if (userState.startWithBookmarks) {
+        document.getElementById('statusFilterSelect').value = 'FAVORITES';
+        window.location.hash = '#bookmarks';
+      } else {
+        if (window.location.hash === '#bookmarks' || window.location.hash === '#favorites') {
+          history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+      }
+      renderProblemGrid();
+    });
+  }
+
+  // Interactive stat pills
+  const statFavsPill = document.getElementById('statFavsPill');
+  if (statFavsPill) {
+    statFavsPill.addEventListener('click', () => {
+      window.location.hash = '#bookmarks';
+      document.getElementById('statusFilterSelect').value = 'FAVORITES';
+      renderProblemGrid();
+    });
+  }
+
+  const statMasteredPill = document.getElementById('statMasteredPill');
+  if (statMasteredPill) {
+    statMasteredPill.addEventListener('click', () => {
+      document.getElementById('statusFilterSelect').value = 'MASTERED';
+      renderProblemGrid();
+    });
+  }
+
+  const statReviewPill = document.getElementById('statReviewPill');
+  if (statReviewPill) {
+    statReviewPill.addEventListener('click', () => {
+      document.getElementById('statusFilterSelect').value = 'REVIEW';
+      renderProblemGrid();
+    });
+  }
+
+  const statTotalPill = document.getElementById('statTotalPill');
+  if (statTotalPill) {
+    statTotalPill.addEventListener('click', () => {
+      document.getElementById('statusFilterSelect').value = 'ALL';
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      const allTopic = document.querySelector('.filter-pill[data-topic="ALL"]');
+      if (allTopic) allTopic.classList.add('active');
+      document.querySelectorAll('.series-tab').forEach(t => t.classList.remove('active'));
+      const allTab = document.querySelector('.series-tab[data-series="ALL"]');
+      if (allTab) allTab.classList.add('active');
+      history.replaceState(null, null, window.location.pathname + window.location.search);
+      renderProblemGrid();
+    });
+  }
+
+  // Handle URL hash changes dynamically
+  window.addEventListener('hashchange', () => {
+    applyBookmarkUrlOrPreference();
+    renderProblemGrid();
+  });
 }
 
 function escapeHtml(str) {

@@ -189,6 +189,15 @@ body {
   border-radius: 9999px;
   font-weight: 600;
   font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .stat-pill.mastered {
@@ -204,6 +213,11 @@ body {
 .stat-pill.total {
   background: var(--primary-light);
   color: var(--primary);
+}
+
+.stat-pill.bookmarked {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
 }
 
 /* Main Container */

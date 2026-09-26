@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#grad)" />
+  <!-- Book pages -->
+  <path d="M28 36 C44 32 58 38 64 44 C70 38 84 32 100 36 L100 88 C84 84 70 90 64 96 C58 90 44 84 28 88 Z" fill="#ffffff" opacity="0.95" />
+  <line x1="64" y1="44" x2="64" y2="96" stroke="#0284c7" stroke-width="3" stroke-linecap="round" />
+  <!-- Bookmark ribbon in gold -->
+  <path d="M56 24 L56 64 L64 58 L72 64 L72 24 Z" fill="url(#gold)" />
+  <!-- Star symbol on bookmark -->
+  <polygon points="64,36 66.5,41.5 72.5,42.2 68,46.3 69.2,52.2 64,49.2 58.8,52.2 60,46.3 55.5,42.2 61.5,41.5" fill="#ffffff" />
+</svg>

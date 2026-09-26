@@ -23,6 +23,9 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="startWithBookmarkToggle" class="btn btn-sm" title="Toggle starting the study portal with bookmarked problems automatically">
+          ⭐ Start with Bookmarks: <span id="startWithBookmarkStatus">OFF</span>
+        </button>
         <button id="openHelicalCalcBtn" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); border: none;">
           🏗️ 50×50 Slab & Helical Piles Lab
         </button>
@@ -40,10 +43,10 @@
   <section class="stats-banner">
     <div class="stats-inner">
       <div class="stat-pills">
-        <span class="stat-pill total">📚 <span id="statTotal">99</span> Total Problems</span>
-        <span class="stat-pill mastered">✅ <span id="statMastered">0</span> Mastered</span>
-        <span class="stat-pill review">⚠️ <span id="statReview">0</span> Needs Review</span>
-        <span class="stat-pill">⭐ <span id="statFavs">0</span> Bookmarked</span>
+        <span class="stat-pill total" id="statTotalPill" title="Click to view All Problems">📚 <span id="statTotal">129</span> Total Problems</span>
+        <span class="stat-pill mastered" id="statMasteredPill" title="Click to filter by Mastered problems">✅ <span id="statMastered">0</span> Mastered</span>
+        <span class="stat-pill review" id="statReviewPill" title="Click to filter by Needs Review problems">⚠️ <span id="statReview">0</span> Needs Review</span>
+        <span class="stat-pill bookmarked" id="statFavsPill" title="Click to filter by Bookmarked problems (#bookmarks)">⭐ <span id="statFavs">0</span> Bookmarked</span>
       </div>
       <div id="videoOfflineStats" style="color: var(--text-muted);">
         🎥 Local Videos: <span id="localVideosCount">Loading...</span> / 99 Ready
@@ -164,6 +167,7 @@
             <option value="MASTERED">✅ Mastered</option>
             <option value="REVIEW">⚠️ Needs Review</option>
           </select>
+          <button id="modalCopyBookmarkBtn" class="btn btn-sm btn-outline" title="Copy direct bookmark link for this problem">🔗 Bookmark Link</button>
           <button id="modalFavBtn" class="btn btn-sm" title="Bookmark Problem">⭐</button>
           <button id="modalCloseBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;">✕</button>
         </div>
