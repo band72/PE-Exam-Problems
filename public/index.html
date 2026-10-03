@@ -23,11 +23,23 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="openCivilToolboxBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; border: none; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);" title="Open Multi-Discipline Civil Engineering Interactive Toolbox">
+          🛠️ Civil Engineering Toolbox
+        </button>
+        <button id="openStormwaterCalcBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0d9488); color: #fff; border: none; box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);" title="Open Stormwater Facility Sizing & NRCS Curve Number (CN) Lab">
+          🌧️ Stormwater & CN Facility Lab
+        </button>
+        <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); color: #fff; text-decoration: none; border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);" title="Download 20-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">
+          📊 Download Master Excel (.xlsx)
+        </a>
         <button id="startWithBookmarkToggle" class="btn btn-sm" title="Toggle starting the study portal with bookmarked problems automatically">
           ⭐ Start with Bookmarks: <span id="startWithBookmarkStatus">OFF</span>
         </button>
         <button id="openHelicalCalcBtn" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); border: none;">
           🏗️ 50×50 Slab & Helical Piles Lab
+        </button>
+        <button id="openNpshCalcBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #059669, #0284c7); color: #fff; border: none;" title="Open Net Positive Suction Head & Cavitation Engineering Lab">
+          💧 NPSH & Pump Cavitation Lab
         </button>
         <button id="themeToggleBtn" class="btn btn-sm" title="Toggle Theme">
           <span id="themeIcon">☀️</span> Light / Dark
@@ -281,6 +293,7 @@
           <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">50' × 50' House Slab & Helical Pile Geotechnical Solver</h2>
         </div>
         <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download 20-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
           <button id="closeHelicalModalBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;">✕</button>
         </div>
       </div>
@@ -482,12 +495,563 @@
     </div>
   </div>
 
+  <!-- Interactive NPSH & Pump Cavitation Engineering Lab Modal -->
+  <div class="modal-backdrop" id="npshCalcModal" aria-hidden="true">
+    <div class="modal-container npsh-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="prob-num-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Interactive Engineering Lab</span>
+          <span class="badge category" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;">NCEES Reference Handbook § 6.3.8.6 • Hydraulics & Pumps</span>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Net Positive Suction Head (NPSH) & Pump Cavitation Simulator</h2>
+        </div>
+        <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download 20-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
+          <button id="closeNpshModalBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;" title="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Banner -->
+      <div class="npsh-kpi-bar">
+        <div class="kpi-item">
+          <span class="kpi-label">Available Head (NPSHa):</span>
+          <strong class="kpi-val" id="npshKpiAvailable">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Required Head (NPSHr):</span>
+          <strong class="kpi-val" id="npshKpiRequired" style="color: #38bdf8;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Cavitation Margin (ΔNPSH):</span>
+          <strong class="kpi-val" id="npshKpiMargin">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">NCEES Max Lift (Hs):</span>
+          <strong class="kpi-val" id="npshKpiHsNcees" style="color: #f59e0b;">--</strong>
+        </div>
+        <div class="kpi-item" style="justify-content: center;">
+          <div id="npshKpiStatusBadge" class="npsh-status-badge status-safe">INITIALIZING</div>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two-Column Layout) -->
+      <div class="modal-body npsh-modal-body">
+        
+        <!-- Controls Pane (Left Column) -->
+        <div class="npsh-controls-pane">
+          
+          <!-- Real-World Preset Scenarios -->
+          <div class="control-group">
+            <label for="npshPresetSelect" class="control-label-row">
+              <span>Preset Engineering Scenarios:</span>
+            </label>
+            <select id="npshPresetSelect" class="npsh-select">
+              <option value="municipal_safe">🌊 Municipal Intake (Safe Operation - Coastal)</option>
+              <option value="denver_altitude">🏔️ Denver High Altitude Booster (Cavitation Trap)</option>
+              <option value="hot_condensate">🔥 Hot Condensate Boiler Feed (Vapor Pressure Boil)</option>
+              <option value="undersized_pipe">⚠️ Undersized 4-Inch Pipe (Friction Choke)</option>
+              <option value="flooded_suction">💧 Flooded Suction Wet Well (Ideal Design Standard)</option>
+            </select>
+            <div id="npshPresetDesc" class="control-feedback" style="font-style: italic; color: var(--text-secondary); margin-top: 0.2rem;">
+              Typical municipal water treatment plant intake operating with ample cavitation margin.
+            </div>
+          </div>
+
+          <h3 class="pane-section-title">1. Atmospheric & Thermal Environment</h3>
+
+          <!-- Altitude / Barometric Pressure -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshAltitude">Site Elevation / Altitude:</label>
+              <span id="valNpshAltitude" class="control-val-badge">0 ft</span>
+            </div>
+            <input type="range" id="npshAltitude" min="0" max="10000" step="100" value="0" class="npsh-slider">
+            <div id="feedbackNpshAltitude" class="control-feedback">Pa = 14.70 psia • Hpa = 33.95 ft</div>
+          </div>
+
+          <!-- Fluid Temperature -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshTemp">Water Operating Temperature:</label>
+              <span id="valNpshTemp" class="control-val-badge amber">60°F</span>
+            </div>
+            <input type="range" id="npshTemp" min="35" max="180" step="1" value="60" class="npsh-slider">
+            <div id="feedbackNpshTemp" class="control-feedback">Pvp = 0.256 psia • Hvp = 0.59 ft</div>
+          </div>
+
+          <h3 class="pane-section-title">2. Suction Pipeline & Geometry</h3>
+
+          <!-- Static Suction Head / Lift (zs) -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshStaticZ">Static Suction Level (zs):</label>
+              <span id="valNpshStaticZ" class="control-val-badge amber">-6.0 ft (Suction Lift)</span>
+            </div>
+            <input type="range" id="npshStaticZ" min="-20" max="20" step="0.5" value="-6" class="npsh-slider">
+            <div class="control-feedback">Negative = Suction Lift (pump above water) | Positive = Flooded Suction</div>
+          </div>
+
+          <!-- Design Flow Rate Q -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshFlow">Pumping Flow Rate (Q):</label>
+              <span id="valNpshFlow" class="control-val-badge blue">800 gpm (1.78 cfs)</span>
+            </div>
+            <input type="range" id="npshFlow" min="100" max="2500" step="25" value="800" class="npsh-slider">
+          </div>
+
+          <!-- Pipe Diameter -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshDiameter">Suction Pipe Inside Diameter (D):</label>
+              <span id="valNpshDiameter" class="control-val-badge">8" (203 mm)</span>
+            </div>
+            <input type="range" id="npshDiameter" min="3" max="16" step="0.5" value="8" class="npsh-slider">
+            <div id="feedbackNpshDiameter" class="control-feedback">Velocity: 5.11 ft/s • Good suction velocity</div>
+          </div>
+
+          <!-- Pipe Length -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshLength">Suction Line Length (L):</label>
+              <span id="valNpshLength" class="control-val-badge">30 ft</span>
+            </div>
+            <input type="range" id="npshLength" min="5" max="150" step="1" value="30" class="npsh-slider">
+          </div>
+
+          <!-- Pipe Material -->
+          <div class="control-group">
+            <label for="npshMaterial" class="control-label-row">
+              <span>Pipe Material & Roughness:</span>
+            </label>
+            <select id="npshMaterial" class="npsh-select">
+              <option value="pvc">PVC / Smooth Plastic (C = 150)</option>
+              <option value="ductile_iron" selected>Ductile Iron Cement-Lined (C = 130)</option>
+              <option value="welded_steel">Welded Steel (C = 120)</option>
+              <option value="cast_iron">Cast Iron / Aged Pipe (C = 100)</option>
+            </select>
+          </div>
+
+          <!-- Minor Loss K -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshMinorK">Minor Loss Coefficient (ΣK):</label>
+              <span id="valNpshMinorK" class="control-val-badge">K = 2.80</span>
+            </div>
+            <input type="range" id="npshMinorK" min="0" max="6.0" step="0.1" value="2.8" class="npsh-slider">
+            <div id="feedbackNpshLosses" class="control-feedback">Friction hf + Minor hm = Total ΣhL</div>
+          </div>
+
+          <h3 class="pane-section-title">3. Pump Impeller & Safety Criteria</h3>
+
+          <!-- NPSHr -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshR">Pump Required NPSH (NPSHr):</label>
+              <span id="valNpshR" class="control-val-badge blue">9.0 ft</span>
+            </div>
+            <input type="range" id="npshR" min="4" max="30" step="0.5" value="9" class="npsh-slider">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.25rem;">
+              <input type="checkbox" id="npshAutoScaleR"> Auto-scale NPSHr dynamically with flow curve (Q^1.8)
+            </label>
+          </div>
+
+          <!-- Safety Margin Requirement -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="npshSafetyMargin">Target Safety Margin (ft):</label>
+              <span id="valNpshSafetyMargin" class="control-val-badge green">3.0 ft</span>
+            </div>
+            <input type="range" id="npshSafetyMargin" min="1.0" max="6.0" step="0.5" value="3.0" class="npsh-slider">
+            <div class="control-feedback">Hydraulic Institute HI 9.6.1 recommends ≥ 2.0 to 3.0 ft or 1.35× ratio</div>
+          </div>
+
+        </div>
+
+        <!-- Display Pane (Right Column) -->
+        <div class="npsh-display-pane">
+          
+          <!-- System SVG Physical Cross-Section & Cavitation Simulation -->
+          <div class="helical-diagram-card">
+            <div class="diagram-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem;">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">System Hydraulic Cross-Section & Cavitation Dynamics</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">Real-Time Physical Feedback & Dynamic Bubbles</span>
+            </div>
+            <div class="diagram-svg-wrapper">
+              <svg id="npshDiagramSvg" viewBox="0 0 760 480" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+          </div>
+
+          <!-- Head Waterfall Balance Chart -->
+          <div class="npsh-waterfall-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="margin: 0; font-size: 0.95rem; font-weight: 700;">Suction Energy Grade Line & Head Balance Waterfall</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">Where does the atmospheric energy go?</span>
+            </div>
+            <div id="npshWaterfallContainer">
+              <!-- Injected dynamically by npsh_calculator.js -->
+            </div>
+          </div>
+
+          <!-- Step-by-Step KaTeX Derivations (NCEES Handbook Section 6.3.8.6) -->
+          <div class="helical-derivations-section">
+            <div class="derivations-header">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Step-by-Step KaTeX Mathematical Derivations</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">Strict Alignment with NCEES PE Civil Reference Handbook § 6.3.8.6</span>
+            </div>
+            <div id="npshMathContainer" class="helical-steps-container">
+              <!-- Injected dynamically by npsh_calculator.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Civil Engineering Interactive Toolbox Modal -->
+  <div class="modal-backdrop" id="civilToolboxModal" aria-hidden="true">
+    <div class="modal-container toolbox-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="prob-num-badge" style="background: rgba(217, 119, 6, 0.2); color: #f59e0b;">Civil Engineering Toolbox</span>
+          <span class="badge category" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;">11 Interactive Engineering Solvers</span>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Multi-Discipline Everyday Civil Engineering Lab</h2>
+        </div>
+        <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download 20-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
+          <button id="toolboxExportBtn" class="btn btn-sm btn-outline" title="Copy professional calculation report sheet to clipboard">📋 Export Report</button>
+          <button id="closeCivilToolboxBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;" title="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- Toolbox Navigation Bar: Search & Discipline Selector Tabs -->
+      <div class="toolbox-sub-bar">
+        <div class="toolbox-search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="toolboxSearchInput" 
+            class="toolbox-search-input" 
+            placeholder="Search all 11 modules, equations, or codes (e.g., 'Rankine', 'Lift Station', 'Plat', 'Hantush', 'Bishop', 'Manning', 'Cipolletti')..."
+            autocomplete="off"
+          >
+        </div>
+        
+        <div class="toolbox-nav-scroll">
+          <button class="toolbox-nav-btn active" data-module="walls">🧱 Walls & Surcharge</button>
+          <button class="toolbox-nav-btn" data-module="ponds">🏞️ Ponds & Storage</button>
+          <button class="toolbox-nav-btn" data-module="mounding">🌊 Mounding (Hantush)</button>
+          <button class="toolbox-nav-btn" data-module="roads">🛣️ Roads & Geometrics</button>
+          <button class="toolbox-nav-btn" data-module="plats">📐 Plats & Rules 1-2</button>
+          <button class="toolbox-nav-btn" data-module="liftstation">⚙️ Lift Stations & Sewer</button>
+          <button class="toolbox-nav-btn" data-module="drainage">🌧️ Drainage & Culverts</button>
+          <button class="toolbox-nav-btn" data-module="piles">🏗️ Piles & Foundations</button>
+          <button class="toolbox-nav-btn" data-module="slabs">🏛️ Slabs & Concrete</button>
+          <button class="toolbox-nav-btn" data-module="slope">⛰️ Slope Stability</button>
+          <button class="toolbox-nav-btn" data-module="weirs_dams">🌊 Weirs & Dams</button>
+        </div>
+      </div>
+
+      <!-- Search Results Dropdown Overlay (Dynamically Populated) -->
+      <div id="toolboxSearchResults" class="toolbox-search-results-box" style="display: none;"></div>
+
+      <!-- KPI Summary Banner -->
+      <div class="npsh-kpi-bar toolbox-kpi-bar">
+        <div class="kpi-item" id="tbKpi1">
+          <span class="kpi-label">Primary Metric:</span>
+          <strong>--</strong>
+        </div>
+        <div class="kpi-item" id="tbKpi2">
+          <span class="kpi-label">Secondary Metric:</span>
+          <strong>--</strong>
+        </div>
+        <div class="kpi-item" id="tbKpi3">
+          <span class="kpi-label">Tertiary Metric:</span>
+          <strong>--</strong>
+        </div>
+        <div class="kpi-item" style="justify-content: center;">
+          <div id="tbKpiBadge" class="npsh-status-badge status-safe">INITIALIZING</div>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two-Column Layout) -->
+      <div class="modal-body toolbox-modal-body">
+        <!-- Controls Pane (Left Column) -->
+        <div class="toolbox-controls-pane" id="toolboxControlsPane">
+          <!-- Injected dynamically by civil_toolbox.js -->
+        </div>
+
+        <!-- Display Pane (Right Column) -->
+        <div class="toolbox-display-pane">
+          <!-- Dynamic SVG Physical Cross-Section -->
+          <div class="helical-diagram-card">
+            <div class="diagram-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem;">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Physical Engineering Cross-Section & Force Vectors</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">Real-Time Dynamic SVG Visualizer</span>
+            </div>
+            <div class="diagram-svg-wrapper" id="toolboxSvgWrapper">
+              <!-- Injected dynamically by civil_toolbox.js -->
+            </div>
+          </div>
+
+          <!-- Step-by-Step KaTeX Derivations -->
+          <div class="helical-derivations-section">
+            <div class="derivations-header">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Step-by-Step KaTeX Mathematical Derivations & Code Criteria</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">NCEES PE Civil Handbook • AASHTO • ACI 318 • 10-States Standards</span>
+            </div>
+            <div id="toolboxMathContainer" class="helical-steps-container">
+              <!-- Injected dynamically by civil_toolbox.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Stormwater Facility Sizing & NRCS Curve Number (CN / TR-55) Lab Modal -->
+  <div class="modal-backdrop" id="stormwaterCalcModal" aria-hidden="true">
+    <div class="modal-container stormwater-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="prob-num-badge" style="background: rgba(14, 165, 233, 0.2); color: #0284c7;">Interactive Stormwater Lab</span>
+          <span class="badge category" style="background: rgba(13, 148, 136, 0.2); color: #0d9488;">NCEES Reference Handbook § 6.3.3 • TR-55 Hydrology</span>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Stormwater Retention / Detention Basin & Curve Number Sizing Lab</h2>
+        </div>
+        <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download 20-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
+          <button id="stormwaterExportBtn" class="btn btn-sm btn-outline" title="Copy professional calculation report sheet to clipboard">📋 Export Report</button>
+          <button id="closeStormwaterModalBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;" title="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Banner -->
+      <div class="npsh-kpi-bar">
+        <div class="kpi-item">
+          <span class="kpi-label">Composite Curve Number (CN):</span>
+          <strong class="kpi-val" id="stormwaterKpiCn" style="color: #38bdf8;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Direct Runoff Depth (Q):</span>
+          <strong class="kpi-val" id="stormwaterKpiQ" style="color: #10b981;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Required Detention Storage:</span>
+          <strong class="kpi-val" id="stormwaterKpiVdet" style="color: #f59e0b;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Provided Basin Storage:</span>
+          <strong class="kpi-val" id="stormwaterKpiVprov">--</strong>
+        </div>
+        <div class="kpi-item" style="justify-content: center;">
+          <div id="stormwaterKpiBadge" class="npsh-status-badge status-safe">INITIALIZING</div>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two-Column Layout) -->
+      <div class="modal-body npsh-modal-body">
+        
+        <!-- Controls Pane (Left Column) -->
+        <div class="npsh-controls-pane">
+          
+          <!-- Real-World Preset Scenarios -->
+          <div class="control-group">
+            <label for="stormwaterPresetSelect" class="control-label-row">
+              <span>Preset Engineering Scenarios:</span>
+            </label>
+            <select id="stormwaterPresetSelect" class="npsh-select">
+              <option value="prob46">🏢 PE Exam Problem #46 Commercial Plaza (250k gal Basin)</option>
+              <option value="mixed_subdivision">🏡 NCEES Standard Mixed Subdivision (HSG C, 25 ac)</option>
+              <option value="coastal_sand">🏖️ Coastal Sandy Infiltration & Retention Basin (HSG A)</option>
+              <option value="clay_industrial">🏭 High-Density Heavy Clay Industrial Park (HSG D)</option>
+              <option value="highway_regional">🛣️ Highway Interchange Regional Detention Pond (HSG B)</option>
+            </select>
+            <div id="stormwaterPresetDesc" class="control-feedback" style="font-style: italic; color: var(--text-secondary); margin-top: 0.2rem;">
+              12.0-acre commercial shopping center with 75% impervious parking/roofs. Sizing and validating 250,000-gal detention tank and outflow attenuation.
+            </div>
+          </div>
+
+          <!-- Hydrologic Soil Group (HSG) Selector -->
+          <div class="control-group">
+            <label class="control-label-row">
+              <span>Hydrologic Soil Group (HSG):</span>
+            </label>
+            <div class="hsg-pills-container" style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+              <button type="button" class="hsg-pill" data-hsg="A" title="Sand, loamy sand, gravel (k > 0.30 in/hr)">Group A (Sand/Gravel)</button>
+              <button type="button" class="hsg-pill" data-hsg="B" title="Silt loam, loam (0.15 - 0.30 in/hr)">Group B (Silt Loam)</button>
+              <button type="button" class="hsg-pill active" data-hsg="C" title="Sandy clay loam (0.05 - 0.15 in/hr)">Group C (Clay Loam)</button>
+              <button type="button" class="hsg-pill" data-hsg="D" title="Heavy clay, shallow water table (< 0.05 in/hr)">Group D (Heavy Clay)</button>
+            </div>
+            <div id="stormwaterHsgDesc" class="control-feedback" style="margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: var(--bg-elevated); border-left: 3px solid #f59e0b; border-radius: 4px; font-size: 0.8rem; color: var(--text-secondary);">
+              Sandy clay loams and soils with a layer that impedes downward water movement (0.05 - 0.15 in/hr).
+            </div>
+          </div>
+
+          <!-- Watershed & TR-55 Land Cover Matrix -->
+          <div class="control-section-header" style="font-weight: 700; font-size: 0.9rem; color: var(--primary); margin: 0.8rem 0 0.4rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;">
+            🌧️ Watershed Hydrology & Curve Number (CN) Matrix
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterAreaAcres" class="control-label-row">
+              <span>Total Drainage Basin Area (A):</span>
+              <span id="lblAreaAcres" class="control-val">12.0 ac</span>
+            </label>
+            <input type="range" id="stormwaterAreaAcres" min="1.0" max="100.0" step="0.5" value="12.0">
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterRainP" class="control-label-row">
+              <span>24-Hour Design Rainfall Depth (P):</span>
+              <span id="lblRainP" class="control-val">4.80 in</span>
+            </label>
+            <input type="range" id="stormwaterRainP" min="1.0" max="12.0" step="0.1" value="4.8">
+          </div>
+
+          <!-- Land Cover Fractions -->
+          <div class="control-group">
+            <label for="stormwaterPctImpervious" class="control-label-row">
+              <span>Impervious Pavement & Roofs (%):</span>
+              <span id="lblPctImpervious" class="control-val">75% (CN=98)</span>
+            </label>
+            <input type="range" id="stormwaterPctImpervious" min="0" max="100" step="5" value="75">
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterPctLawn" class="control-label-row">
+              <span>Turf Grass / Open Lawns (Good cond.) (%):</span>
+              <span id="lblPctLawn" class="control-val">20% (CN=74)</span>
+            </label>
+            <input type="range" id="stormwaterPctLawn" min="0" max="100" step="5" value="20">
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterPctWoods" class="control-label-row">
+              <span>Woods / Forested Conservation Buffer (%):</span>
+              <span id="lblPctWoods" class="control-val">5% (CN=70)</span>
+            </label>
+            <input type="range" id="stormwaterPctWoods" min="0" max="100" step="5" value="5">
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterPctMeadow" class="control-label-row">
+              <span>Meadow / Continuous Prairie Grass (%):</span>
+              <span id="lblPctMeadow" class="control-val">0% (CN=71)</span>
+            </label>
+            <input type="range" id="stormwaterPctMeadow" min="0" max="100" step="5" value="0">
+          </div>
+
+          <!-- Basin Geometry & Outlet Sizing -->
+          <div class="control-section-header" style="font-weight: 700; font-size: 0.9rem; color: var(--primary); margin: 0.8rem 0 0.4rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;">
+            🏞️ Detention Basin Geometry & Hydraulic Outlets
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterDrawdownHours" class="control-label-row">
+              <span>Water Quality Orifice Drawdown Target:</span>
+              <span id="lblDrawdownHours" class="control-val">36 hrs</span>
+            </label>
+            <input type="range" id="stormwaterDrawdownHours" min="12" max="72" step="6" value="36">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div class="control-group">
+              <label for="stormwaterPondBottomL" class="control-label-row">
+                <span>Bottom Length:</span>
+              </label>
+              <input type="number" id="stormwaterPondBottomL" class="npsh-input" value="120" min="20" max="800" step="10">
+            </div>
+            <div class="control-group">
+              <label for="stormwaterPondBottomW" class="control-label-row">
+                <span>Bottom Width:</span>
+              </label>
+              <input type="number" id="stormwaterPondBottomW" class="npsh-input" value="60" min="10" max="500" step="10">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div class="control-group">
+              <label for="stormwaterPondSideSlopeZ" class="control-label-row">
+                <span>Side Slope (Z:1):</span>
+              </label>
+              <input type="number" id="stormwaterPondSideSlopeZ" class="npsh-input" value="3.0" min="1.5" max="6.0" step="0.5">
+            </div>
+            <div class="control-group">
+              <label for="stormwaterPondMaxH" class="control-label-row">
+                <span>Total Depth (H):</span>
+                <span id="lblPondMaxH" class="control-val">5.5 ft</span>
+              </label>
+              <input type="number" id="stormwaterPondMaxH" class="npsh-input" value="5.5" min="2.0" max="20.0" step="0.5">
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="stormwaterWeirCrestL" class="control-label-row">
+              <span>Emergency Spillway Crest Length (Lw):</span>
+            </label>
+            <input type="number" id="stormwaterWeirCrestL" class="npsh-input" value="15.0" min="5.0" max="100.0" step="1.0">
+          </div>
+
+          <!-- NCEES Practice Problem Card -->
+          <div id="stormwaterProblemBox" class="exam-problem-box" style="margin-top: 1rem; padding: 0.85rem; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 8px;">
+            <!-- Injected by stormwater_calculator.js -->
+          </div>
+
+        </div>
+
+        <!-- Display Pane (Right Column) -->
+        <div class="npsh-display-pane">
+          
+          <!-- Dynamic SVG Physical Profile / Hydrograph Card -->
+          <div class="helical-diagram-card">
+            <div class="diagram-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem;">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Physical Engineering Cross-Section & Hydrograph Routing</h3>
+              <div class="stormwater-view-toggles" style="display: flex; gap: 0.3rem;">
+                <button type="button" id="btnViewProfile" class="btn btn-xs active" style="font-weight: 700;">Basin Profile SVG</button>
+                <button type="button" id="btnViewHydrograph" class="btn btn-xs" style="font-weight: 700;">Hydrograph Routing SVG</button>
+              </div>
+            </div>
+            <div class="diagram-svg-wrapper" id="stormwaterSvgWrapper" style="min-height: 380px;">
+              <!-- Injected dynamically by stormwater_calculator.js -->
+            </div>
+          </div>
+
+          <!-- Step-by-Step KaTeX Derivations -->
+          <div class="helical-derivations-section">
+            <div class="derivations-header">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Step-by-Step KaTeX Mathematical Derivations & Code Criteria</h3>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">NCEES PE Reference Handbook § 6.3.3 • NRCS TR-55</span>
+            </div>
+            <div id="stormwaterMathContainer" class="helical-steps-container">
+              <!-- Injected dynamically by stormwater_calculator.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="app-footer">
     SolvedIn6 PE Exam Practice Problem Portal • Water Resources & Environmental Engineering • Built for PE Licensure Preparation
   </footer>
 
   <script src="helical_calculator.js"></script>
+  <script src="npsh_calculator.js"></script>
+  <script src="civil_toolbox.js"></script>
+  <script src="stormwater_calculator.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

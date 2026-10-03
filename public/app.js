@@ -128,7 +128,28 @@ function applyBookmarkUrlOrPreference() {
     }
   }
 
-  // 3. Deep-link bookmark to a specific problem: #problem-52, #52, #WR-12, #wr12
+  // 3. Deep-link to Civil Engineering Toolbox
+  if (hash.startsWith('#toolbox')) {
+    const mod = hash.replace(/^#(?:toolbox-)?/, '').replace(/^#toolbox/, '');
+    setTimeout(() => {
+      if (window.CivilToolbox) {
+        window.CivilToolbox.openModule(mod || 'walls');
+      }
+    }, 150);
+    return;
+  }
+
+  // 3b. Deep-link to Stormwater & CN Facility Lab
+  if (hash === '#stormwater' || hash === '#pond-sizing' || hash === '#cn-routing' || hash === '#stormwater-calc') {
+    setTimeout(() => {
+      if (window.StormwaterCalculator) {
+        window.StormwaterCalculator.open();
+      }
+    }, 150);
+    return;
+  }
+
+  // 4. Deep-link bookmark to a specific problem: #problem-52, #52, #WR-12, #wr12
   if (hash && hash !== '#bookmarks' && hash !== '#favorites') {
     const cleanHash = hash.replace(/^#(?:problem-)?/, '').replace(/^#/, '');
     const found = allProblems.find(p => {
@@ -371,7 +392,80 @@ function renderProblemGrid() {
   const activeSeriesTab = document.querySelector('.series-tab.active');
   const activeSeries = activeSeriesTab ? activeSeriesTab.dataset.series : 'ALL';
 
+  const rawQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+  let toolboxMatches = [];
+  if (rawQuery && window.CivilToolbox) {
+    toolboxMatches = window.CivilToolbox.searchModules(rawQuery);
+  }
+
   if (filtered.length === 0) {
+    // 1. Check if query matches Civil Engineering Toolbox
+    if (toolboxMatches.length > 0) {
+      const topMatch = toolboxMatches[0];
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; max-width: 720px; margin: 2rem auto; background: var(--bg-card); border: 2px solid #d97706; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">${topMatch.icon}</div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #f59e0b;">Civil Engineering Toolbox: ${topMatch.title}</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+            Interactive engineering solver for <strong>${topMatch.title}</strong> with USCS soil presets, U.S. weather distributions, live SVG diagrams, adjustable Safety Factors (SF), and NCEES derivations (${topMatch.nceesRef}).
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn toolbox-featured-btn" onclick="if(window.CivilToolbox) window.CivilToolbox.openModule('${topMatch.key}');" style="font-size: 0.95rem; padding: 0.65rem 1.4rem;">
+              🚀 Open Interactive ${topMatch.title}
+            </button>
+            <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+              📚 Reset All Filters & View Problems
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const isNpshSearch = rawQuery.includes('npsh') || rawQuery.includes('cavitat') || rawQuery.includes('suction lift');
+    if (isNpshSearch) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; max-width: 680px; margin: 2rem auto; background: var(--bg-card); border: 2px solid #0284c7; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💧⚡</div>
+          <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);">NCEES § 6.3.8.6 NPSH & Pump Cavitation Engineering Lab</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+            Master Net Positive Suction Head with live sliders for altitude, fluid temperature, suction lift, pipe diameter, and pump NPSH_r. Features real-time SVG cavitation bubble simulation, waterfall charts, and NCEES derivations!
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="if(window.NpshCalculator) window.NpshCalculator.open();" style="font-size: 0.95rem; padding: 0.65rem 1.4rem; background: linear-gradient(135deg, #059669, #0284c7); border: none; font-weight: 700;">
+              🚀 Launch NPSH & Cavitation Simulator
+            </button>
+            <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+              📚 View All 129 Problems
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const isStormwaterSearch = rawQuery.includes('stormwater') || rawQuery.includes('curve number') || rawQuery.includes('tr-55') || rawQuery === 'cn' || rawQuery.includes('detention') || rawQuery.includes('retention') || rawQuery.includes('basin');
+    if (isStormwaterSearch) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; max-width: 700px; margin: 2rem auto; background: var(--bg-card); border: 2px solid #0d9488; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🌧️🏞️</div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #0d9488;">NCEES § 6.3.3 Stormwater Facility Sizing & Curve Number (CN) Lab</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+            Master Stormwater Detention & Retention Basin sizing, TR-55 composite Curve Number matrix across Soil Groups A-D, Water Quality volume drawdown orifice sizing, and emergency broad-crested spillway hydraulics!
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="if(window.StormwaterCalculator) window.StormwaterCalculator.open();" style="font-size: 0.95rem; padding: 0.65rem 1.4rem; background: linear-gradient(135deg, #0284c7, #0d9488); border: none; font-weight: 700;">
+              🚀 Launch Stormwater & CN Facility Lab
+            </button>
+            <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+              📚 View All Problems
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     const activeStatus = document.getElementById('statusFilterSelect').value;
     if (activeStatus === 'FAVORITES') {
       grid.innerHTML = `
@@ -400,7 +494,29 @@ function renderProblemGrid() {
     return;
   }
 
-  grid.innerHTML = filtered.map(p => {
+  // Prepend featured Civil Engineering Toolbox Card if matching query
+  let featuredToolboxHtml = '';
+  if (toolboxMatches.length > 0) {
+    const topMatch = toolboxMatches[0];
+    featuredToolboxHtml = `
+      <div class="toolbox-featured-card">
+        <div class="toolbox-featured-left">
+          <span class="toolbox-featured-icon">${topMatch.icon}</span>
+          <div>
+            <h4 class="toolbox-featured-title">Civil Engineering Toolbox: ${topMatch.title}</h4>
+            <p class="toolbox-featured-desc">
+              Found ${toolboxMatches.length} matching interactive engineering module${toolboxMatches.length > 1 ? 's' : ''} with live SVG simulation, adjustable Safety Factors & NCEES equations.
+            </p>
+          </div>
+        </div>
+        <button class="toolbox-featured-btn" onclick="if(window.CivilToolbox) window.CivilToolbox.openModule('${topMatch.key}');">
+          🛠️ Launch ${topMatch.title} Lab
+        </button>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = featuredToolboxHtml + filtered.map(p => {
     const isFav = !!userState.favorites[p.id];
     const status = userState.statuses[p.id] || 'UNATTEMPTED';
     const hasLocal = localVideosSet.has(`${p.id}.mp4`);
@@ -558,6 +674,17 @@ function openProblemModal(problemIdOrObj) {
       <div style="margin-top: 0.75rem; width: 100%;">
         <button class="btn btn-sm btn-primary" onclick="HelicalCalculator.open();" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #0284c7, #2563eb); border: none; font-weight: 700; padding: 0.5rem;">
           🏗️ Launch Interactive 50×50 Slab & Helical Pile Lab (Pore Pressure & SF Matrix)
+        </button>
+      </div>
+    `;
+  }
+
+  // If Problem #46 (Detention Basin Capacity) or related detention/stormwater problem, link to the Stormwater & CN Lab
+  if (p.problem_number === 46 || (p.topic && p.topic.toLowerCase().includes('detention'))) {
+    nceesContainer.innerHTML += `
+      <div style="margin-top: 0.75rem; width: 100%;">
+        <button class="btn btn-sm btn-primary" onclick="if(window.StormwaterCalculator) window.StormwaterCalculator.open();" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #0284c7, #0d9488); border: none; font-weight: 700; padding: 0.5rem; box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);">
+          🌧️ Launch Interactive Stormwater & CN Facility Sizing Lab (TR-55, Drawdown & Spillway)
         </button>
       </div>
     `;
