@@ -35,7 +35,10 @@
         <button id="startWithBookmarkToggle" class="btn btn-sm" title="Toggle starting the study portal with bookmarked problems automatically">
           ⭐ Start with Bookmarks: <span id="startWithBookmarkStatus">OFF</span>
         </button>
-        <button id="openHelicalCalcBtn" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); border: none;">
+                <button id="openConsolidationCalcBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #b45309, #d97706); color: #fff; border: none; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.35);" title="Open Time Rate of Consolidation & Soil Surcharge Preload Lab">
+          ⏳ Consolidation & Surcharge Lab
+        </button>
+<button id="openHelicalCalcBtn" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); border: none;">
           🏗️ 50×50 Slab & Helical Piles Lab
         </button>
         <button id="openNpshCalcBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; background: linear-gradient(135deg, #059669, #0284c7); color: #fff; border: none;" title="Open Net Positive Suction Head & Cavitation Engineering Lab">
@@ -55,7 +58,7 @@
   <section class="stats-banner">
     <div class="stats-inner">
       <div class="stat-pills">
-        <span class="stat-pill total" id="statTotalPill" title="Click to view All Problems">📚 <span id="statTotal">129</span> Total Problems</span>
+        <span class="stat-pill total" id="statTotalPill" title="Click to view All Problems">📚 <span id="statTotal">130</span> Total Problems</span>
         <span class="stat-pill mastered" id="statMasteredPill" title="Click to filter by Mastered problems">✅ <span id="statMastered">0</span> Mastered</span>
         <span class="stat-pill review" id="statReviewPill" title="Click to filter by Needs Review problems">⚠️ <span id="statReview">0</span> Needs Review</span>
         <span class="stat-pill bookmarked" id="statFavsPill" title="Click to filter by Bookmarked problems (#bookmarks)">⭐ <span id="statFavs">0</span> Bookmarked</span>
@@ -88,7 +91,7 @@
       <!-- Series / Exam Playlist Tabs -->
       <div class="series-tab-row" id="seriesTabContainer">
         <button class="series-tab active" data-series="ALL">
-          All Problems <span class="tab-count" id="tabCountAll">129</span>
+          All Problems <span class="tab-count" id="tabCountAll">130</span>
         </button>
         <button class="series-tab" data-series="Water Resources">
           💧 Water Resources Playlist <span class="tab-count" id="tabCountWR">76</span>
@@ -123,7 +126,7 @@
       <!-- Sub-controls: Status Filter & Sorting -->
       <div class="sub-controls">
         <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-          <span>Showing <strong id="visibleCount">129</strong> problems</span>
+          <span>Showing <strong id="visibleCount">130</strong> problems</span>
           <select id="statusFilterSelect">
             <option value="ALL">All Study Statuses</option>
             <option value="FAVORITES">⭐ Bookmarked Only</option>
@@ -1043,6 +1046,290 @@
     </div>
   </div>
 
+  
+  <!-- Interactive Time Rate of Consolidation & Soil Surcharge Preload Modal -->
+  <div class="modal-backdrop" id="consolidationCalcModal" aria-hidden="true">
+    <div class="modal-container cons-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="prob-num-badge" style="background: rgba(217, 119, 6, 0.2); color: #f59e0b;">Interactive Engineering Lab</span>
+          <span class="badge category" style="background: rgba(180, 83, 9, 0.2); color: #fbbf24;">NCEES PE Civil § 3.3 & § 3.4 • Geotechnical Soil Mechanics</span>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Time Rate of Consolidation & Soil Surcharge Preload Simulator</h2>
+        </div>
+        <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download 21-Tab Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
+          <button id="closeConsolidationModalBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;" title="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Banner -->
+      <div class="cons-kpi-bar">
+        <div class="kpi-item">
+          <span class="kpi-label">Required Surcharge Weight:</span>
+          <strong class="kpi-val" id="consKpiWeightTons" style="color: #f59e0b;">-- Tons</strong>
+          <span id="consKpiWeightLbs" style="font-size: 0.72rem; color: var(--text-muted);">-- lbs</span>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Consolidation Preload Time:</span>
+          <strong class="kpi-val" id="consKpiTimeDays" style="color: #38bdf8;">-- Days</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Surcharge Fill Thickness (hs):</span>
+          <strong class="kpi-val" id="consKpiFillHeight">-- ft</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Pore Moisture Dissipated (Us):</span>
+          <strong class="kpi-val" id="consKpiPoreMoisture" style="color: #10b981;">-- %</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Structural Settlement (Sp):</span>
+          <strong class="kpi-val" id="consKpiSettlement">-- in</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Post-Construction Settlement:</span>
+          <strong class="kpi-val" style="color: #10b981;">0.00 in (Eliminated)</strong>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two-Pane Responsive Layout) -->
+      <div class="modal-body helical-modal-body">
+        
+        <!-- Left Pane: Interactive Sliders & Parameters -->
+        <div class="helical-controls-pane">
+          
+          <!-- Site Civil History & Reclamation Context Banner -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; line-height: 1.45;">
+            <div style="font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.2rem;">
+              <span>🌊 Site History:</span> <span>Reclaimed Lake Bed & Filled Drainage Ditch</span>
+            </div>
+            <div style="color: var(--text-secondary);">
+              Historic 4.5-acre parcel where an abandoned retention lake and farm ditch were backfilled with saturated soft clay. Surcharge preloading squeezes out trapped pore moisture into perimeter relief ditches to prevent foundation settlement.
+            </div>
+          </div>
+
+          <!-- Solver Direction Mode Toggle -->
+          <div class="control-group">
+            <label class="control-label-row">
+              <span style="font-weight: 700; color: #f59e0b;">⚙️ Dual-Direction Solver Target:</span>
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.2rem;">
+              <button type="button" class="cons-pill active" id="consModeTimeToWeightBtn" title="Set available preloading time to find required surcharge weight and fill height">
+                ⏱️ Mode A: Allowable Time ➔ Surcharge Weight (t ➔ Ws)
+              </button>
+              <button type="button" class="cons-pill" id="consModeWeightToTimeBtn" title="Set available surcharge weight or height to calculate time required to squeeze out moisture">
+                🚜 Mode B: Surcharge Weight/Height ➔ Preload Time (Ws ➔ t)
+              </button>
+            </div>
+          </div>
+
+          <!-- Soil Presets & Stratigraphy Selection -->
+          <div class="control-group">
+            <label for="consSoilPresetSelect" class="control-label-row">
+              <span>Compressible Clay Layer Preset:</span>
+            </label>
+            <select id="consSoilPresetSelect" class="helical-select">
+              <option value="soft_marine_clay">🧱 Soft Marine Clay (NC, cv = 0.080 ft²/d, Cc = 0.36) • Problem #130</option>
+              <option value="fat_clay_ch">🌊 Fat Clay / Gulf Coast Gumbo (CH, cv = 0.035 ft²/d, Cc = 0.52)</option>
+              <option value="medium_stiff_clay">🧱 Medium Stiff Alluvial Clay (CL, cv = 0.150 ft²/d, Cc = 0.24)</option>
+              <option value="organic_silt_peat">🌱 Organic Peat & Muck (cv = 0.020 ft²/d, Cc = 0.65)</option>
+              <option value="glacial_till_cl">🪨 Dense Lean Clay / Glacial Till (cv = 0.280 ft²/d, Cc = 0.16)</option>
+            </select>
+          </div>
+
+          <!-- Drainage Boundary Condition Toggle -->
+          <div class="control-group">
+            <label class="control-label-row">
+              <span>Drainage Boundary Conditions:</span>
+            </label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.2rem;">
+              <button type="button" class="cons-pill active" id="consDrainDoubleBtn" title="Permeable sand at top and bottom: Hdr = H / 2 (Consolidates 4x faster)">
+                ↕️ Double Drainage (H/2)
+              </button>
+              <button type="button" class="cons-pill" id="consDrainSingleBtn" title="Permeable sand at top, impermeable bedrock at bottom: Hdr = H">
+                ⬆️ Single Drainage (H)
+              </button>
+            </div>
+          </div>
+
+          <!-- Surcharge Fill Material Preset -->
+          <div class="control-group">
+            <label for="consFillPresetSelect" class="control-label-row">
+              <span>Surcharge Soil Fill Material:</span>
+            </label>
+            <select id="consFillPresetSelect" class="helical-select">
+              <option value="granular_borrow">Compacted Granular Borrow (γ = 125 pcf)</option>
+              <option value="crushed_stone">Dense Crushed Stone / Aggregate (γ = 135 pcf)</option>
+              <option value="common_earth">Common Earth / Silty Clay Fill (γ = 115 pcf)</option>
+              <option value="lightweight_fill">Lightweight Aggregate Fill (γ = 90 pcf)</option>
+            </select>
+          </div>
+
+          <!-- Section: Preload Time & Surcharge Sliders -->
+          <div class="pane-section-title" style="color: #f59e0b; margin-top: 0.5rem;">
+            ⏱️ Surcharge Schedule & Loading Sliders
+          </div>
+
+          <div class="control-group">
+            <label for="consTimeSlider" class="control-label-row">
+              <span>Allowable Preload Time (t):</span>
+              <span id="consTimeVal" class="control-val">180 days (5.9 mo)</span>
+            </label>
+            <input type="range" id="consTimeSlider" min="15" max="720" step="5" value="180" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consHeightSlider" class="control-label-row">
+              <span>Surcharge Fill Height (hs):</span>
+              <span id="consHeightVal" class="control-val">29.7 ft</span>
+            </label>
+            <input type="range" id="consHeightSlider" min="2" max="45" step="0.5" value="29.7" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consGammaSlider" class="control-label-row">
+              <span>Surcharge Soil Unit Weight (γ_fill):</span>
+              <span id="consGammaVal" class="control-val">125 pcf</span>
+            </label>
+            <input type="range" id="consGammaSlider" min="80" max="145" step="1" value="125" class="helical-slider">
+          </div>
+
+          <!-- Section: Foundation Load & Soil Geometry -->
+          <div class="pane-section-title" style="color: #38bdf8; margin-top: 0.5rem;">
+            🏗️ Soil Layer & Foundation Parameters
+          </div>
+
+          <div class="control-group">
+            <label for="consClayThickSlider" class="control-label-row">
+              <span>Clay Layer Thickness (H):</span>
+              <span id="consClayThickVal" class="control-val">20 ft</span>
+            </label>
+            <input type="range" id="consClayThickSlider" min="5" max="60" step="1" value="20" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consCvSlider" class="control-label-row">
+              <span>Coefficient of Consolidation (cv):</span>
+              <span id="consCvVal" class="control-val">0.080 ft²/day</span>
+            </label>
+            <input type="range" id="consCvSlider" min="0.010" max="0.500" step="0.005" value="0.080" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consCcSlider" class="control-label-row">
+              <span>Compression Index (Cc):</span>
+              <span id="consCcVal" class="control-val">0.36</span>
+            </label>
+            <input type="range" id="consCcSlider" min="0.10" max="0.80" step="0.02" value="0.36" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consE0Slider" class="control-label-row">
+              <span>Initial Void Ratio (e0):</span>
+              <span id="consE0Val" class="control-val">0.90</span>
+            </label>
+            <input type="range" id="consE0Slider" min="0.40" max="2.00" step="0.05" value="0.90" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consSigma0Slider" class="control-label-row">
+              <span>Effective Overburden Stress (σ'v0):</span>
+              <span id="consSigma0Val" class="control-val">2,200 psf</span>
+            </label>
+            <input type="range" id="consSigma0Slider" min="800" max="5000" step="50" value="2200" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consDeltaPSlider" class="control-label-row">
+              <span>Permanent Structural Load (Δσp):</span>
+              <span id="consDeltaPVal" class="control-val">1,500 psf</span>
+            </label>
+            <input type="range" id="consDeltaPSlider" min="500" max="4000" step="50" value="1500" class="helical-slider">
+          </div>
+
+          <!-- Section: Site Acreage & Building Pad Geometry -->
+          <div class="pane-section-title" style="color: #10b981; margin-top: 0.5rem;">
+            🗺️ Site Acreage & Building Pad Geometry
+          </div>
+
+          <div class="control-group">
+            <label for="consAcreageSlider" class="control-label-row">
+              <span>Total Property Parcel Area:</span>
+              <span id="consAcreageVal" class="control-val">4.5 Acres</span>
+            </label>
+            <input type="range" id="consAcreageSlider" min="1.0" max="25.0" step="0.5" value="4.5" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consFootprintLSlider" class="control-label-row">
+              <span>Building Pad Length (L):</span>
+              <span id="consFootprintLVal" class="control-val">300 ft</span>
+            </label>
+            <input type="range" id="consFootprintLSlider" min="50" max="600" step="10" value="300" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consFootprintWSlider" class="control-label-row">
+              <span>Building Pad Width (W):</span>
+              <span id="consFootprintWVal" class="control-val">200 ft (60,000 sq ft = 1.38 ac)</span>
+            </label>
+            <input type="range" id="consFootprintWSlider" min="50" max="500" step="10" value="200" class="helical-slider">
+          </div>
+
+          <div class="control-group">
+            <label for="consBermSlopeSelect" class="control-label-row">
+              <span>Embankment Side Berm Batter:</span>
+            </label>
+            <select id="consBermSlopeSelect" class="helical-select">
+              <option value="2.0" selected>2:1 (H:V) Standard Geotechnical Batter</option>
+              <option value="1.5">1.5:1 (H:V) Steep Reinforced Batter</option>
+              <option value="3.0">3:1 (H:V) Gentle Maintenance Batter</option>
+              <option value="0.0">Vertical Sheeted / Shored Perimeter</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Right Pane: SVG Stratigraphy, Isochrones & Step-by-Step KaTeX Math -->
+        <div class="helical-display-pane">
+          
+          <!-- 2D Dynamic Stratigraphy & Drainage Visualizer Card -->
+          <div class="helical-diagram-card">
+            <div class="diagram-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.6rem;">
+              <span style="font-weight: 700; font-size: 0.95rem; color: #f59e0b;">
+                🚜 Soil Stratigraphy Cross-Section, Moisture Drainage Vectors & Pore Pressure Isochrone
+              </span>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                NCEES § 3.3.4 Terzaghi 1-D Consolidation
+              </span>
+            </div>
+            <svg id="consDiagramSvg" viewBox="0 0 640 440" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: auto; display: block; border-radius: 6px;"></svg>
+          </div>
+
+          <!-- Step-by-Step KaTeX Solution Derivations Card -->
+          <div class="helical-derivations-section">
+            <div class="derivations-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem;">📝 Step-by-Step NCEES Mathematical Derivations</h3>
+                <span style="font-size: 0.8rem; color: #f59e0b;">Live KaTeX Substitutions: Time Factor Tv, Surcharge Stress Δσs & Weight Ws</span>
+              </div>
+              <button id="consCopyReportBtn" class="btn btn-sm btn-outline" title="Copy formatted engineering calculation report to clipboard">
+                📋 Copy Report
+              </button>
+            </div>
+            <div id="consMathContainer" class="helical-steps-container">
+              <!-- Injected dynamically by consolidation_calculator.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="app-footer">
     SolvedIn6 PE Exam Practice Problem Portal • Water Resources & Environmental Engineering • Built for PE Licensure Preparation
@@ -1052,6 +1339,7 @@
   <script src="npsh_calculator.js"></script>
   <script src="civil_toolbox.js"></script>
   <script src="stormwater_calculator.js"></script>
+  <script src="consolidation_calculator.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

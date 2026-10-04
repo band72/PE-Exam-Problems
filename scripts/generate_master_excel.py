@@ -117,7 +117,7 @@ def build_master_workbook(output_path):
     style_header_banner(ws1, 'SOLVEDIN6 • MASTER CIVIL ENGINEERING COMPANION WORKBOOK',
                         'Comprehensive Engineering Design Solvers • NCEES PE Reference Handbook, ACI 318, AASHTO, FHWA, USDA TR-55')
 
-    style_section(ws1, 4, '1. WORKBOOK NAVIGATION & MODULE DIRECTORY (20 WORKSHEETS)')
+    style_section(ws1, 4, '1. WORKBOOK NAVIGATION & MODULE DIRECTORY (21 WORKSHEETS)')
     headers1 = ['Sheet Name', 'Discipline / Domain', 'NCEES & Standard References', 'Scope & Engineering Capabilities']
     style_table_headers(ws1, 5, headers1)
 
@@ -140,7 +140,8 @@ def build_master_workbook(output_path):
         ('Weirs & Dams', 'Hydraulics & Water Resources', 'USACE EM 1110-2-2200 • NCEES § 6.3.8', 'Rectangular, 90-deg V-notch (Q = 2.50 H^2.5), Cipolletti, and broad-crested weirs; Concrete gravity dam overturning, sliding, uplift, bearing, piping'),
         ('50x50 Slab & Helical Piles', 'Geotechnical & Residential Foundation', 'ACI 318 • ICC-ES AC358 Helical Standards', '50x50 house load distribution, helical pile torque-to-capacity correlation Q_ult = Kt*T, multi-helix load sharing, pore pressure, safety factor matrix'),
         ('NPSH & Pump Cavitation', 'Hydraulics & Pumping Systems', 'NCEES § 6.3.8.6 • Hydraulic Institute Standards', 'Atmospheric pressure vs altitude, vapor pressure vs temperature, suction pipe Hazen-Williams friction & minor losses, NPSHa, NPSHr, NCEES max lift Hs'),
-        ('Stormwater & TR-55 CN', 'Hydrology & Stormwater Management', 'USDA NRCS TR-55 • NCEES § 6.3.3', 'Hydrologic Soil Groups A-D, composite Curve Number CN, S, Ia, direct runoff Q = (P-0.2S)^2/(P+0.8S), TR-55 detention ratio Vs/Vr, drawdown orifice do')
+        ('Stormwater & TR-55 CN', 'Hydrology & Stormwater Management', 'USDA NRCS TR-55 • NCEES § 6.3.3', 'Hydrologic Soil Groups A-D, composite Curve Number CN, S, Ia, direct runoff Q = (P-0.2S)^2/(P+0.8S), TR-55 detention ratio Vs/Vr, drawdown orifice do'),
+        ('Consolidation & Surcharge', 'Geotechnical Soil Mechanics', 'NCEES § 3.3 & § 3.4 • Terzaghi 1-D', 'Time rate of consolidation, single vs double drainage (Hdr), Terzaghi Tv, preload surcharge design, required soil weight & fill thickness to eliminate settlement'),
     ]
 
     for idx, row_vals in enumerate(toc_data, start=6):
@@ -1225,6 +1226,88 @@ def build_master_workbook(output_path):
                     {'values': ['Emergency Spillway Crest Length (L_w)', 20.0, 'ft', 'Broad-crested weir spillway crest', '-'], 'is_input': True, 'format': '0.0'},
                     {'values': ['Emergency Surcharge Head (H_w)', '=(B21 / (3.10 * B42))^(2/3)', 'ft', 'H_w = [Q_in / (Cw * Lw)]^(2/3)', '-'], 'format': '0.00'},
                     {'values': ['Provided Embankment Freeboard', '=B39 - (4.50 + B43)', 'ft', 'Freeboard = H_total - (DHW + H_w)', '=IF((B39-(4.50+B43))>=1.0, "PASS - FREEBOARD >= 1.0 FT", "FAIL - LOW FREEBOARD")'], 'is_check': True, 'format': '0.00'}
+                ]
+            }
+        ]
+    )
+
+
+    # =========================================================
+    # TAB 21: TIME RATE OF CONSOLIDATION & SOIL SURCHARGE PRELOAD
+    # =========================================================
+    create_calc_sheet(
+        'Consolidation & Surcharge',
+        'SOLVEDIN6 CIVIL MASTER TOOLBOX - TAB 21: TIME RATE OF CONSOLIDATION & SOIL SURCHARGE PRELOAD',
+        'NCEES PE Civil § 3.3 & § 3.4 • Reclaimed Lake Bed / Filled Ditch Surcharge Preload & Moisture Dissipation Solver',
+        [
+            {
+                'title': '1. IN-SITU COMPRESSIBLE SOIL STRATIGRAPHY & GEOTECHNICAL PROPERTIES',
+                'headers': ['Stratigraphy & Soil Parameter', 'Design Value', 'Units', 'NCEES Handbook Formulation / Reference'],
+                'rows': [
+                    {'values': ['Compressible Clay Layer Total Thickness (H)', 20.00, 'ft', 'Total saturated clay layer thickness'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Drainage Boundary Condition', 'Double Drainage', '-', 'Double (sand top/bottom) or Single (rock at bottom)'], 'is_input': True},
+                    {'values': ['Maximum Drainage Path Distance (H_dr)', '=IF(B7="Single Drainage", B6, B6/2)', 'ft', 'H_dr = H/2 for double drainage, H for single drainage'], 'format': '0.00'},
+                    {'values': ['Coefficient of Consolidation (c_v)', 0.080, 'ft²/day', 'Hydraulic consolidation rate property'], 'is_input': True, 'format': '0.000'},
+                    {'values': ['Clay Compression Index (C_c)', 0.360, '-', 'Slope of e vs log(sigma) virgin compression curve'], 'is_input': True, 'format': '0.000'},
+                    {'values': ['Initial In-Situ Void Ratio (e_0)', 0.900, '-', 'Initial volumetric void ratio of clay stratum'], 'is_input': True, 'format': '0.000'},
+                    {'values': ["Initial Effective Overburden Stress (σ'_v0)", 2200.0, 'psf', 'Effective vertical stress at mid-depth of clay layer'], 'is_input': True, 'format': '#,##0.0'}
+                ]
+            },
+            {
+                'title': '2. STRUCTURAL FOUNDATION LOADING & ULTIMATE SETTLEMENT (S_p,ult)',
+                'headers': ['Structural Loading Parameter', 'Design Value', 'Units', 'Governing Compression Equation'],
+                'rows': [
+                    {'values': ['Foundation Footprint Length (L)', 300.0, 'ft', 'Building / foundation footprint length'], 'is_input': True, 'format': '0.0'},
+                    {'values': ['Foundation Footprint Width (W)', 200.0, 'ft', 'Building / foundation footprint width'], 'is_input': True, 'format': '0.0'},
+                    {'values': ['Total Foundation Footprint Area (A)', '=B16 * B17', 'sq ft', 'A = L * W'], 'format': '#,##0.0'},
+                    {'values': ['Permanent Foundation Bearing Pressure (Δσ_p)', 1500.0, 'psf', 'Net structural stress increase applied to soil'], 'is_input': True, 'format': '#,##0.0'},
+                    {'values': ["Total Mid-Depth Vertical Stress (σ'_v0 + Δσ_p)", '=B12 + B19', 'psf', 'Total effective stress under permanent building load'], 'format': '#,##0.0'},
+                    {'values': ['Clay Compression Factor [C_c * H / (1 + e_0)]', '=(B10 * B6) / (1 + B11)', 'ft', 'Dimensional coefficient for 1D settlement'], 'format': '0.0000'},
+                    {'values': ['Ultimate Primary Consolidation Settlement (S_p,ult)', '=B21 * LOG10(B20 / B12)', 'ft', "S_p,ult = [Cc*H/(1+e0)] * log10((σ'v0 + Δσp) / σ'v0)"], 'format': '0.0000'},
+                    {'values': ['ULTIMATE PRIMARY SETTLEMENT IN INCHES', '=B22 * 12', 'inches', 'Total moisture expulsion deformation to eliminate'], 'is_total': True, 'format': '0.00'}
+                ]
+            },
+            {
+                'title': '3. PRELOAD SURCHARGE DESIGN: TIME ➔ REQUIRED SOIL WEIGHT (MODE A)',
+                'headers': ['Preload Surcharge Parameter', 'Design Value', 'Units', 'Terzaghi 1-D Consolidation Derivation'],
+                'rows': [
+                    {'values': ['Allotted Preloading Time Window (t)', 180.0, 'days', 'Target construction window before building erection'], 'is_input': True, 'format': '0.0'},
+                    {'values': ['Equivalent Preload Duration in Months', '=B27 / 30.4375', 'months', 'Duration in calendar months'], 'format': '0.0'},
+                    {'values': ['Terzaghi Time Factor (T_v)', '=(B9 * B27) / (B8^2)', '-', 'T_v = (c_v * t) / (H_dr^2)'], 'format': '0.0000'},
+                    {'values': ['Degree of Consolidation under Preload (U_s)', '=IF(B29<=0.2827, SQRT((4*B29)/PI()), 1 - 10^((1.781-B29)/0.933 - 2))', '-', 'Terzaghi average consolidation ratio'], 'format': '0.0000'},
+                    {'values': ['Pore Water Moisture Dissipated Percentage', '=B30 * 100', '%', 'Moisture squeezed out of clay pores in allotted time'], 'format': '0.0'},
+                    {'values': ['Required Ultimate Settlement under Preload', '=B22 / B30', 'ft', 'S_total,ult = S_p,ult / U_s'], 'format': '0.0000'},
+                    {'values': ['Required Surcharge Soil Pressure (Δσ_s)', '=B12 * (10^(B32 / B21)) - B12 - B19', 'psf', 'Additional vertical stress required to accelerate settlement'], 'format': '#,##0.0'},
+                    {'values': ['Surcharge Soil Compacted Unit Weight (γ_fill)', 125.0, 'pcf', 'Compacted density of borrow soil surcharge'], 'is_input': True, 'format': '0.0'},
+                    {'values': ['REQUIRED SURCHARGE FILL HEIGHT (h_s)', '=B33 / B34', 'ft', 'h_s = Δσ_s / γ_fill'], 'is_total': True, 'format': '0.00'},
+                    {'values': ['Total Surcharge Fill Volume in Cubic Feet', '=B18 * B35', 'cu ft', 'Volume = Area * h_s'], 'format': '#,##0.0'},
+                    {'values': ['Total Surcharge Fill Volume in Cubic Yards', '=B36 / 27', 'cu yd', 'Volume in bank / compacted cubic yards'], 'format': '#,##0.0'},
+                    {'values': ['TOTAL SURCHARGE SOIL WEIGHT IN POUNDS', '=B36 * B34', 'lbs', 'Weight = Volume * γ_fill'], 'format': '#,##0.0'},
+                    {'values': ['TOTAL SURCHARGE SOIL WEIGHT IN TONS', '=B38 / 2000', 'Tons', 'Required surcharge borrow weight in short tons'], 'is_total': True, 'format': '#,##0.0'}
+                ]
+            },
+            {
+                'title': '4. REVERSE SOLVER: SPECIFIED SURCHARGE WEIGHT ➔ PRELOAD TIME (MODE B)',
+                'headers': ['Reverse Solver Parameter', 'Design Value', 'Units', 'Inverted Terzaghi Formulation'],
+                'rows': [
+                    {'values': ['Specified Surcharge Soil Fill Height', 8.00, 'ft', 'Pre-selected contractor fill thickness'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Generated Surcharge Effective Stress', '=B43 * B34', 'psf', 'Δσ_s = h_s * γ_fill'], 'format': '#,##0.0'},
+                    {'values': ['Total Surcharge Weight Placed in Tons', '=(B18 * B43 * B34) / 2000', 'Tons', 'Total weight of 8.0-ft fill over footprint'], 'format': '#,##0.0'},
+                    {'values': ["Total Vertical Stress under 8-ft Surcharge", '=B12 + B19 + B44', 'psf', "σ'_v0 + Δσ_p + Δσ_s"], 'format': '#,##0.0'},
+                    {'values': ['Total Ultimate Settlement under 8-ft Fill', '=B21 * LOG10(B46 / B12)', 'ft', 'Total settlement if load left permanently'], 'format': '0.0000'},
+                    {'values': ['Required Consolidation Ratio (U_s,req)', '=B22 / B47', '-', 'U_s = S_p,ult / S_total,ult'], 'format': '0.0000'},
+                    {'values': ['Required Terzaghi Time Factor (T_v,b)', '=1.781 - 0.933 * LOG10(100 - 100 * B48)', '-', 'T_v for U > 60%'], 'format': '0.0000'},
+                    {'values': ['REQUIRED PRELOADING DURATION IN DAYS', '=(B49 * (B8^2)) / B9', 'days', 't = (T_v * H_dr^2) / c_v'], 'is_total': True, 'format': '0.0'},
+                    {'values': ['REQUIRED PRELOADING DURATION IN MONTHS', '=B50 / 30.4375', 'months', 'Duration in calendar months'], 'is_total': True, 'format': '0.0'}
+                ]
+            },
+            {
+                'title': '5. FOUNDATION PERFORMANCE, PRECONSOLIDATION & RESIDUAL SETTLEMENT CHECK',
+                'headers': ['Performance Check Parameter', 'Design Value', 'Units', 'Criterion / Code Limit', 'Status Check'],
+                'rows': [
+                    {'values': ['Post-Construction Residual Settlement', 0.00, 'inches', 'Target = 0.00 inches (Fully dissipated)', 'PASS - SETTLEMENT ELIMINATED']},
+                    {'values': ["Preconsolidation Stress Created (σ'_p)", '=B12 + B19 + B33', 'psf', 'Maximum past effective stress induced by preload', '-'], 'format': '#,##0.0'},
+                    {'values': ['Overconsolidation Ratio (OCR)', '=(B12 + B19 + B33) / (B12 + B19)', '-', "OCR = (σ'v0 + Δσp + Δσs) / (σ'v0 + Δσp)", '=IF(((B12+B19+B33)/(B12+B19))>1.0, "PASS - OVERCONSOLIDATED STATE ACHIEVED", "FAIL - UNDERCONSOLIDATED")'], 'is_check': True, 'format': '0.00'}
                 ]
             }
         ]

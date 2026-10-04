@@ -2,16 +2,22 @@
 
 An interactive, searchable study portal and video walkthrough dashboard for the **Civil PE Exam**, indexed from the complete [SolvedIn6 YouTube series](https://www.youtube.com/@solvedin6).
 
-Features all **129 problems** spanning **Water Resources**, **Environmental Engineering**, and the **Civil Breadth** specifications with detailed step-by-step KaTeX mathematical solutions, NCEES Reference Handbook search terms, synchronized video playback, and offline video streaming support.
+Features all **130 problems** spanning **Water Resources**, **Environmental Engineering**, and the **Civil Breadth** specifications with detailed step-by-step KaTeX mathematical solutions, NCEES Reference Handbook search terms, synchronized video playback, offline video streaming support, and 5 interactive engineering labs.
 
 ---
 
 ## 🚀 Key Features
 
-- **129 PE Exam Problems Cataloged & Classified**:
+- **130 PE Exam Problems Cataloged & Classified**:
   - **Water Resources Playlist**: 76 problems (sequential WR #1–#76).
   - **Environmental Playlist**: 65 problems (sequential Env #1–#65).
-  - **Civil Breadth Playlist**: 30 problems (sequential Breadth #1–#30, YT #51–#80) covering Transportation (Horizontal Curves #51, Vertical Curves #52), Structural Mechanics, Geotechnical & Soils, and Construction & Planning.
+  - **Civil Breadth Series**: 31 problems (Breadth #1–#31) covering Transportation, Structural Mechanics, Geotechnical & Soils (Vertical Stress #54, Settlement #72, Consolidation & Surcharge Preload #130), and Construction & Planning.
+- **Interactive Engineering Simulator Labs**:
+  - **Time Rate of Consolidation & Soil Surcharge Preload Lab**: Live adjustable sliders for preloading time, soil weight, fill height, and clay stratigraphy, with dual-direction solvers and pore water dissipation isochrone simulation.
+  - **Stormwater Facility Sizing & TR-55 CN Lab**: Basin sizing, TR-55 curve number matrix across Groups A–D, drawdown orifice hydraulics, and emergency spillway checks.
+  - **50×50 Slab & Helical Piles Lab**: Pile capacity, soil spectrum, and simultaneous safety factor matrix (SF 1.0–3.0).
+  - **NPSH & Pump Cavitation Simulator**: Head loss calculations, vapor pressure, and suction lift limits.
+  - **Multi-Discipline Civil Engineering Toolbox**: 11 core interactive solvers with companion 21-tab Master Excel workbook.
 - **Synchronized Video Player**:
   - Dual-mode player: stream directly from YouTube or play local offline MP4 video walkthroughs with HTTP 206 partial-range video streaming.
   - Interactive transcript with timestamp-seek buttons that jump the video to specific calculation steps.

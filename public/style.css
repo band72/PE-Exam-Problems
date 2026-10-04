@@ -2072,3 +2072,63 @@ body {
 
 
 
+
+/* ==========================================================================
+   CONSOLIDATION & SOIL SURCHARGE PRELOAD LAB STYLING
+   ========================================================================== */
+.cons-modal-container {
+  max-width: 1480px;
+  width: 96vw;
+  height: 94vh;
+  max-height: 94vh;
+}
+
+.cons-kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-color);
+}
+
+@media (max-width: 1200px) {
+  .cons-kpi-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .cons-kpi-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.cons-pill {
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.cons-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: #d97706;
+}
+
+.cons-pill.active {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4);
+}

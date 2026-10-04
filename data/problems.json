@@ -96126,5 +96126,102 @@
     "env_display": "Env #65 of 65",
     "breadth_number": null,
     "breadth_display": null
+  },
+  {
+    "id": "consolidation_surcharge_p130",
+    "problem_number": 130,
+    "display_number": "Problem #130",
+    "title": "PE Exam Practice Problem #130: Geotechnical Engineering | Time Rate of Consolidation & Soil Surcharge Preload Design",
+    "topic": "Time Rate of Consolidation & Surcharge Preload Design",
+    "discipline": "Geotechnical / Civil Breadth",
+    "playlists": [
+      "Civil Breadth",
+      "Water Resources"
+    ],
+    "category": "Geotechnical & Soils",
+    "duration": 450,
+    "duration_formatted": "07:30",
+    "problem_statement": "A commercial logistics center is planned on a 4.5-acre parcel (196,020 sq ft). Historic site aerials and civil records confirm that an abandoned retention lake and an agricultural drainage ditch traversing the central building envelope were previously backfilled with uncompacted fine-grained fill and soft sediments. Geotechnical borings across this reclaimed lake bed and filled ditch uncover a 20-ft-thick normally consolidated soft marine clay stratum (c_v = 0.080 ft²/day, C_c = 0.36, e_0 = 0.90, initial mid-depth effective overburden stress σ'_v0 = 2,200 psf) bounded by permeable sand strata (two-way double drainage, H_dr = 10 ft). A proposed 300 ft × 200 ft (60,000 sq ft = 1.38 acres) warehouse foundation pad will exert a uniform permanent structural load of Δσ_p = 1,500 psf over the filled lake bed. To prevent severe post-construction differential settlement, a temporary compacted soil surcharge preload (γ_fill = 125 pcf) is placed over the building footprint, with perimeter relief ditches excavated to intercept and collect expelled pore moisture. (a) Surcharge Weight & Water Expulsion from Time: If the preloading window is restricted to t = 180 days (5.9 months), determine the volume of pore water moisture squeezed out of the filled lake/ditch matrix (gallons), the required surcharge stress Δσ_s (psf), the fill thickness h_s (ft), and the total pad surcharge weight W_s (tons and 22-ton dump truckloads). (b) Consolidation Time from Surcharge Weight: If environmental permits restrict the fill thickness to h_s = 8.0 ft (pad surcharge weight = 30,000 tons), calculate the required preloading duration t (in days and months) to squeeze out the target moisture and arrest settlement.",
+    "ncees_search_terms": [
+      "Soil Mechanics: Primary Consolidation Settlement / Cc & e0",
+      "Time Rate of Consolidation / Terzaghi 1-D / Time Factor Tv",
+      "Preload Surcharge Design / Excess Pore Water Pressure Dissipation",
+      "Weight and Volume of Soil Fill (W = γ_fill · V = Δσ_s · A)"
+    ],
+    "solution_steps": [
+      {
+        "step_number": 1,
+        "title": "Step 1: Calculate In-Situ Overburden Stress, Ultimate Structural Settlement & Expelled Moisture Volume",
+        "timestamp": "00:45",
+        "math_formula": "S_{p,ult} = \\frac{C_c \\cdot H}{1 + e_0} \\log_{10}\\left(\\frac{\\sigma'_{v0} + \\Delta\\sigma_p}{\\sigma'_{v0}}\\right), \\quad V_{water} = A_{pad} \\cdot S_{p,ult} \\cdot 7.48052",
+        "explanation": "Calculate the ultimate primary consolidation settlement of the 20-ft normally consolidated clay layer under the permanent structural load Δσ_p = 1,500 psf:\n\nS_{p,ult} = [0.36 × 20 / (1 + 0.90)] × log10[(2,200 + 1,500) / 2,200]\n= (7.2 / 1.90) × log10(3,700 / 2,200) = 3.7895 × log10(1.6818)\n= 3.7895 × 0.22578 = 0.8556 ft = 10.27 inches.\n\nOver the 300 ft × 200 ft (60,000 sq ft) warehouse pad footprint (occupying 1.38 acres of the 4.5-acre parcel directly over the filled lake and ditch), the total volume of pore water squeezed out of the clay matrix is:\nV_{water} = 60,000 sq ft × 0.8556 ft = 51,336 ft³\nIn gallons: 51,336 ft³ × 7.48052 gal/ft³ = 384,020 gallons ≈ 384,000 gallons (1.18 acre-feet).\nThis 384,000 gallons of trapped pore moisture must be expelled from the backfilled lake bed and ditch deposits into the perimeter relief ditches during preloading so that zero residual settlement occurs after construction."
+      },
+      {
+        "step_number": 2,
+        "title": "Step 2: Part (a) Determine Time Factor Tv and Required Degree of Consolidation Us for t = 180 Days",
+        "timestamp": "02:15",
+        "math_formula": "T_v = \\frac{c_v \\cdot t}{H_{dr}^2}, \\quad U_s = \\sqrt{\\frac{4 T_v}{\\pi}} \\quad (U \\le 60\\%)",
+        "explanation": "For two-way drainage through permeable top and bottom sand strata, the maximum drainage path is half the stratum thickness: H_dr = 20 ft / 2 = 10 ft.\n\nFor the allotted preloading window t = 180 days (5.9 months):\nT_v = (0.080 ft²/day × 180 days) / (10 ft)² = 14.4 / 100 = 0.144.\n\nSince T_v ≤ 0.2863 (U ≤ 60%), calculate the degree of consolidation achieved under the total load:\nU_s = sqrt((4 / π) × T_v) = sqrt((4 / 3.14159) × 0.144) = sqrt(0.18335) = 0.4282 (42.82%).\n\nTo eliminate all future post-construction settlement under the permanent load, the settlement achieved under the surcharge at time t must equal the full structural settlement: S(t) = U_s × S_{total,ult} = S_{p,ult}.\nTherefore, S_{total,ult} = S_{p,ult} / U_s = 0.8556 ft / 0.4282 = 1.9981 ft (23.98 inches)."
+      },
+      {
+        "step_number": 3,
+        "title": "Step 3: Part (a) Solve for Required Surcharge Stress Δσ_s, Fill Height h_s, Surcharge Weight, and Truckloads",
+        "timestamp": "04:10",
+        "math_formula": "\\Delta\\sigma_s = \\sigma'_{v0}\\left[\\left(\\frac{\\sigma'_{v0} + \\Delta\\sigma_p}{\\sigma'_{v0}}\\right)^{1/U_s} - 1\\right] - \\Delta\\sigma_p, \\quad W_s = \\frac{\\gamma_{fill} \\cdot A \\cdot h_s}{2,000}",
+        "explanation": "Equating S_{total,ult} to the compression formula:\nlog10[(2,200 + 1,500 + Δσ_s) / 2,200] = (1 / U_s) × log10[(2,200 + 1,500) / 2,200] = (1 / 0.4282) × 0.22578 = 0.52729.\n\n(3,700 + Δσ_s) / 2,200 = 10^0.52729 = 3.3674\n3,700 + Δσ_s = 7,408 psf  ==>  Δσ_s = 7,408 - 3,700 = 3,708 psf.\n\nRequired surcharge soil fill height (γ_fill = 125 pcf):\nh_s = Δσ_s / γ_fill = 3,708 psf / 125 pcf = 29.67 ft ≈ 29.7 ft.\n\nTotal soil surcharge weight directly over the 300 ft × 200 ft (60,000 sq ft) warehouse pad:\nVolume = 60,000 sq ft × 29.67 ft = 1,780,200 ft³ = 65,933 yd³.\nWeight W_s = 1,780,200 ft³ × 125 pcf = 222,525,000 lbs = 111,263 Tons.\nEarthwork hauling fleet required: 111,263 Tons / 22 Tons/truck = 5,057 tri-axle dump truckloads."
+      },
+      {
+        "step_number": 4,
+        "title": "Step 4: Part (b) Calculate Consolidation Preload Time for Specified 8-ft Surcharge Fill (30,000 Tons)",
+        "timestamp": "05:45",
+        "math_formula": "U_s = \\frac{S_{p,ult}}{S_{total,ult}}, \\quad T_v = 1.781 - 0.933 \\log_{10}(100 - 100 U_s), \\quad t = \\frac{T_v \\cdot H_{dr}^2}{c_v}",
+        "explanation": "If site constraints restrict the surcharge fill height to h_s = 8.0 ft (γ_fill = 125 pcf):\nΔσ_s = 8.0 ft × 125 pcf = 1,000 psf.\nPad surcharge weight = (60,000 sq ft × 8.0 ft × 125 pcf) / 2,000 = 30,000 Tons (60,000,000 lbs).\n\nTotal applied stress during preload = Δσ_p + Δσ_s = 1,500 + 1,000 = 2,500 psf.\nTotal ultimate settlement:\nS_{total,ult} = (7.2 / 1.90) × log10[(2,200 + 2,500) / 2,200] = 3.7895 × log10(4,700 / 2,200) = 3.7895 × 0.32968 = 1.2493 ft (14.99 inches).\n\nRequired degree of consolidation under preload:\nU_s = S_{p,ult} / S_{total,ult} = 0.8556 ft / 1.2493 ft = 0.6849 (68.49%).\n\nSince U_s > 0.60, use Terzaghi logarithmic formula:\nT_v = 1.781 - 0.933 × log10(100 - 68.49) = 1.781 - 0.933 × log10(31.51) = 1.781 - 0.933 × 1.49845 = 1.781 - 1.39805 = 0.38295.\n\nPreloading time required to push out moisture:\nt = (T_v × H_dr²) / c_v = (0.38295 × 100) / 0.080 = 478.7 days ≈ 479 Days (15.7 Months)."
+      }
+    ],
+    "final_answer": "Part (a): Water Expelled = 384,000 Gallons (51,336 ft³) | Surcharge Stress Δσ_s = 3,708 psf | Fill Height h_s = 29.7 ft | Pad Surcharge Weight = 111,263 Tons (222,525,000 lbs, 5,057 Truckloads) for t = 180 Days. Part (b): Preload Time t = 479 Days (15.7 Months) for 8.0-ft Surcharge Fill of 30,000 Tons.",
+    "key_takeaway": "When constructing over reclaimed land features like backfilled lakes, farm ponds, or agricultural ditches, uncompacted fine-grained deposits undergo severe long-term consolidation settlement. Preloading with a temporary soil surcharge accelerates this process, squeezing trapped pore water (here over 384,000 gallons on a 300'×200' pad) out into perimeter relief ditches before foundation erection. When the surcharge is removed, the soil behaves as overconsolidated under the structural load, completely arresting future settlement. Remember that consolidation time scales with H_dr²: two-way drainage dissipates pore water 4× faster than single drainage!",
+    "youtube_url": "https://www.youtube.com/watch?v=y5CYFxTmRHU",
+    "embed_url": "https://www.youtube-nocookie.com/embed/y5CYFxTmRHU",
+    "local_video_filename": "y5CYFxTmRHU.mp4",
+    "has_local_video": true,
+    "thumbnail": "https://i.ytimg.com/vi/y5CYFxTmRHU/maxresdefault.jpg",
+    "segments_count": 24,
+    "segments": [
+      {
+        "start": "00:00:00.000",
+        "end": "00:00:06.500",
+        "start_seconds": 0,
+        "timestamp": "00:00",
+        "text": "In this problem, we evaluate the time rate of consolidation and soil surcharge preloading for a commercial parcel with a filled lake and ditch."
+      },
+      {
+        "start": "00:00:06.500",
+        "end": "00:00:15.000",
+        "start_seconds": 6.5,
+        "timestamp": "00:06",
+        "text": "A 20-foot soft clay stratum under a 300 by 200 foot warehouse pad is subjected to a 1,500 psf load."
+      },
+      {
+        "start": "00:00:15.000",
+        "end": "00:00:25.000",
+        "start_seconds": 15,
+        "timestamp": "00:15",
+        "text": "We determine the pore water moisture volume squeezed out (384,000 gallons into perimeter ditches) and required surcharge weight of 111,263 tons for a 180-day preload."
+      },
+      {
+        "start": "00:00:25.000",
+        "end": "00:00:35.000",
+        "start_seconds": 25,
+        "timestamp": "00:25",
+        "text": "Then we calculate the time required (479 days) if an 8.0-foot soil surcharge (30,000 tons) is applied instead."
+      }
+    ],
+    "plain_transcript": "In this problem, we evaluate the time rate of consolidation and soil surcharge preloading for a 4.5-acre commercial parcel where a historic retention lake and agricultural drainage ditch were backfilled. A 20-foot soft clay layer is subjected to a 300 by 200 foot warehouse foundation load of 1,500 psf. We determine the pore water moisture volume squeezed out of the filled lake bed (384,000 gallons into perimeter relief ditches) and required surcharge weight of 111,263 tons for a 180-day preload. Then we calculate the time required (479 days) if an 8.0-foot soil surcharge (30,000 tons) is applied instead.",
+    "wr_number": null,
+    "wr_display": null,
+    "env_number": null,
+    "env_display": null,
+    "breadth_number": 31,
+    "breadth_display": "Breadth #31 of 31"
   }
 ]

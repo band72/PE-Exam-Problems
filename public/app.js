@@ -436,7 +436,7 @@ function renderProblemGrid() {
               🚀 Launch NPSH & Cavitation Simulator
             </button>
             <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
-              📚 View All 129 Problems
+              📚 View All Problems
             </button>
           </div>
         </div>
@@ -466,6 +466,28 @@ function renderProblemGrid() {
       return;
     }
 
+    const isConsolidationSearch = rawQuery.includes('consolidation') || rawQuery.includes('surcharge') || rawQuery.includes('terzaghi') || rawQuery.includes('preload') || rawQuery.includes('pore water') || rawQuery.includes('isochrone');
+    if (isConsolidationSearch) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; max-width: 700px; margin: 2rem auto; background: var(--bg-card); border: 2px solid #d97706; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">⏳🚜</div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #f59e0b;">NCEES § 3.3 & § 3.4 Time Rate of Consolidation & Soil Surcharge Lab</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+            Master 1-D Terzaghi consolidation, excess pore water pressure dissipation, single vs. double drainage, and soil surcharge preloading with live adjustable sliders for allowable time and soil weight!
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="if(window.ConsolidationCalculator) window.ConsolidationCalculator.open();" style="font-size: 0.95rem; padding: 0.65rem 1.4rem; background: linear-gradient(135deg, #b45309, #d97706); border: none; font-weight: 700; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.35);">
+              🚀 Launch Consolidation & Surcharge Lab
+            </button>
+            <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+              📚 View All Problems
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     const activeStatus = document.getElementById('statusFilterSelect').value;
     if (activeStatus === 'FAVORITES') {
       grid.innerHTML = `
@@ -476,7 +498,7 @@ function renderProblemGrid() {
             You haven't bookmarked any problems yet. Click the star icon (☆) on any problem card to save it for quick review!
           </p>
           <button class="btn btn-primary" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.6rem 1.25rem;">
-            📚 Show All 129 Problems
+            📚 Show All Problems
           </button>
         </div>
       `;
@@ -685,6 +707,17 @@ function openProblemModal(problemIdOrObj) {
       <div style="margin-top: 0.75rem; width: 100%;">
         <button class="btn btn-sm btn-primary" onclick="if(window.StormwaterCalculator) window.StormwaterCalculator.open();" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #0284c7, #0d9488); border: none; font-weight: 700; padding: 0.5rem; box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);">
           🌧️ Launch Interactive Stormwater & CN Facility Sizing Lab (TR-55, Drawdown & Spillway)
+        </button>
+      </div>
+    `;
+  }
+
+  // If Problem #130 (Consolidation & Surcharge Preload) or Problem #72 (Settlement Concept), link to Consolidation Lab
+  if (p.problem_number === 130 || p.problem_number === 72 || (p.topic && p.topic.toLowerCase().includes('consolidation'))) {
+    nceesContainer.innerHTML += `
+      <div style="margin-top: 0.75rem; width: 100%;">
+        <button class="btn btn-sm btn-primary" onclick="if(window.ConsolidationCalculator) window.ConsolidationCalculator.open();" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #b45309, #d97706); border: none; font-weight: 700; padding: 0.5rem; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.35);">
+          ⏳ Launch Interactive Consolidation & Surcharge Lab (Live Sliders: Time & Weight)
         </button>
       </div>
     `;
