@@ -216,9 +216,24 @@ function updateStatsBanner() {
   if (document.getElementById('tabCountBoth')) document.getElementById('tabCountBoth').textContent = bothCount;
 }
 
+// Normalize user search queries, correcting typos and expanding common abbreviations
+function normalizeSearchQuery(raw) {
+  if (!raw) return '';
+  let q = raw.toLowerCase().trim();
+  q = q.replace(/waste\s+water/g, 'wastewater');
+  q = q.replace(/\bperoidic\b/g, 'periodic');
+  q = q.replace(/\bperodic\b/g, 'periodic');
+  q = q.replace(/\bperiodical\b/g, 'periodic');
+  q = q.replace(/\belemnt\b/g, 'element');
+  q = q.replace(/\belemnts\b/g, 'elements');
+  q = q.replace(/\bchemestry\b/g, 'chemistry');
+  q = q.replace(/\bmendeleev\b/g, 'periodic table');
+  return q;
+}
+
 // Filtering & Sorting
 function getFilteredProblems() {
-  const rawQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+  const rawQuery = document.getElementById('searchInput').value.trim();
   
   // Series / Playlist filter
   const activeSeriesTab = document.querySelector('.series-tab.active');
@@ -230,9 +245,16 @@ function getFilteredProblems() {
   const activeStatus = document.getElementById('statusFilterSelect').value;
   const sortBy = document.getElementById('sortSelect').value;
 
-  // Normalize query and generate tokens (support 'waste water' as synonym for 'wastewater')
-  const query = rawQuery.replace(/waste\s+water/g, 'wastewater');
+  // Normalize query and generate tokens (support 'waste water' as synonym for 'wastewater', fix 'peroidic' typo)
+  const query = normalizeSearchQuery(rawQuery);
   const tokens = query ? query.split(/\s+/).filter(Boolean) : [];
+  const isPeriodicQuery = query.includes('periodic') || 
+                          query.includes('element') || 
+                          query.includes('cation') || 
+                          query.includes('anion') || 
+                          query.includes('atomic weight') || 
+                          query.includes('meq') ||
+                          query.includes('valence');
 
   let filtered = allProblems.filter(p => {
     // 1. Series / Playlist filter
@@ -275,6 +297,7 @@ function getFilteredProblems() {
         (p.topic || '') + ' ' +
         (p.category || '') + ' ' +
         (p.category === 'Wastewater Treatment' ? 'wastewater waste water waste sewage sewer ' : '') +
+        (p.problem_number === 91 || p.problem_number === 92 ? 'periodic table peroidic chemistry elements atomic weight cation anion meq milliequivalents ' : '') +
         (p.problem_statement || '') + ' ' +
         (p.final_answer || '') + ' ' +
         (p.ncees_search_terms || []).join(' ') + ' ' +
@@ -345,6 +368,11 @@ function getFilteredProblems() {
         if (stmt.includes(t)) score += 20;
       }
 
+      // Periodic Table relevance bonus
+      if (isPeriodicQuery && (p.problem_number === 91 || p.problem_number === 92)) {
+        score += 25000;
+      }
+
       p._searchScore = score;
     } else {
       p._searchScore = 0;
@@ -392,13 +420,52 @@ function renderProblemGrid() {
   const activeSeriesTab = document.querySelector('.series-tab.active');
   const activeSeries = activeSeriesTab ? activeSeriesTab.dataset.series : 'ALL';
 
-  const rawQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+  const rawQuery = document.getElementById('searchInput').value.trim();
+  const normalizedQuery = normalizeSearchQuery(rawQuery);
+
   let toolboxMatches = [];
-  if (rawQuery && window.CivilToolbox) {
-    toolboxMatches = window.CivilToolbox.searchModules(rawQuery);
+  if (normalizedQuery && window.CivilToolbox) {
+    toolboxMatches = window.CivilToolbox.searchModules(normalizedQuery);
   }
 
+  const isPeriodicSearch = normalizedQuery.includes('periodic') ||
+                           normalizedQuery.includes('element') ||
+                           normalizedQuery.includes('mendeleev') ||
+                           normalizedQuery.includes('atomic weight') ||
+                           normalizedQuery.includes('cation') ||
+                           normalizedQuery.includes('anion') ||
+                           normalizedQuery.includes('valence') ||
+                           normalizedQuery.includes('meq') ||
+                           normalizedQuery.includes('milliequivalent') ||
+                           normalizedQuery.includes('chemistry') ||
+                           normalizedQuery.includes('molar mass');
+
   if (filtered.length === 0) {
+    // 0. Check if query matches Periodic Table & Water Chemistry
+    if (isPeriodicSearch) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; max-width: 720px; margin: 2rem auto; background: var(--bg-card); border: 2px solid #8b5cf6; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🧪🔬</div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #a78bfa;">NCEES § 6 Periodic Table & Water Chemistry Engineering Lab</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+            Master the 118-Element Periodic Table, standard atomic weights, common water treatment radicals, valence states, and live Cation-Anion Balance Solver (Problem #92)!
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="if(window.PeriodicTable) window.PeriodicTable.open();" style="font-size: 0.95rem; padding: 0.65rem 1.4rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; font-weight: 700; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);">
+              🚀 Launch Periodic Table & Chemistry Lab
+            </button>
+            <button class="btn btn-primary" onclick="if(window.PeriodicTable) window.PeriodicTable.open('p92');" style="font-size: 0.95rem; padding: 0.65rem 1.4rem; background: linear-gradient(135deg, #0284c7, #2563eb); border: none; font-weight: 700;">
+              ⚡ Solve Problem #92 Cation-Anion Balance
+            </button>
+            <button class="btn" onclick="showAllProblems()" style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+              📚 Reset All Filters & View Problems
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     // 1. Check if query matches Civil Engineering Toolbox
     if (toolboxMatches.length > 0) {
       const topMatch = toolboxMatches[0];
@@ -516,6 +583,32 @@ function renderProblemGrid() {
     return;
   }
 
+  // Prepend featured Periodic Table & Water Chemistry Card if matching query
+  let featuredPeriodicHtml = '';
+  if (isPeriodicSearch) {
+    featuredPeriodicHtml = `
+      <div class="pt-featured-card">
+        <div class="pt-featured-left">
+          <span class="pt-featured-icon">🧪</span>
+          <div>
+            <h4 class="pt-featured-title">NCEES § 6 Periodic Table & Water Chemistry Engineering Lab</h4>
+            <p class="pt-featured-desc">
+              Interactive 118-element periodic grid, atomic weights, PE Reference Manual p. 30 common radicals, equivalent weights, and live Cation-Anion Balance Solver (Problem #92).
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="pt-featured-btn" onclick="if(window.PeriodicTable) window.PeriodicTable.open();">
+            🔬 Open Periodic Table
+          </button>
+          <button class="pt-featured-btn" onclick="if(window.PeriodicTable) window.PeriodicTable.open('p92');" style="background: linear-gradient(135deg, #0284c7, #2563eb);">
+            ⚡ Problem #92 Solver
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   // Prepend featured Civil Engineering Toolbox Card if matching query
   let featuredToolboxHtml = '';
   if (toolboxMatches.length > 0) {
@@ -538,7 +631,7 @@ function renderProblemGrid() {
     `;
   }
 
-  grid.innerHTML = featuredToolboxHtml + filtered.map(p => {
+  grid.innerHTML = featuredPeriodicHtml + featuredToolboxHtml + filtered.map(p => {
     const isFav = !!userState.favorites[p.id];
     const status = userState.statuses[p.id] || 'UNATTEMPTED';
     const hasLocal = localVideosSet.has(`${p.id}.mp4`);

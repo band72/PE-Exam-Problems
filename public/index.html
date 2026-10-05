@@ -23,6 +23,9 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="openPeriodicTableBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; border: none; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);" title="Open NCEES Periodic Table of Elements & Water Chemistry Lab (Problem #92 Cation-Anion Balance)">
+          🧪 Periodic Table & Chemistry Lab
+        </button>
         <button id="openCivilToolboxBtn" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 800; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; border: none; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);" title="Open Multi-Discipline Civil Engineering Interactive Toolbox">
           🛠️ Civil Engineering Toolbox
         </button>
@@ -1330,6 +1333,239 @@
     </div>
   </div>
 
+  <!-- Interactive NCEES Periodic Table & Water Chemistry Engineering Lab Modal -->
+  <div class="modal-backdrop" id="periodicTableModal" aria-hidden="true">
+    <div class="modal-container pt-modal-container">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="prob-num-badge" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa;">Interactive Chemistry Lab</span>
+          <span class="badge category" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">NCEES Reference Handbook § 6 • Water Treatment Chemistry</span>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">NCEES Periodic Table & Water Chemistry Engineering Lab</h2>
+        </div>
+        <div class="modal-header-right">
+          <a href="Civil_Engineering_Master_Toolbox.xlsx" download="Civil_Engineering_Master_Toolbox.xlsx" class="btn btn-sm btn-outline" style="text-decoration: none;" title="Download Master Civil Engineering Companion Excel Workbook (.xlsx)">📊 Download Master Excel (.xlsx)</a>
+          <button id="closePtModalBtn" class="btn btn-sm" style="font-size: 1.1rem; line-height: 1;" title="Close Modal">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Banner -->
+      <div class="npsh-kpi-bar">
+        <div class="kpi-item">
+          <span class="kpi-label">Total Cations:</span>
+          <strong class="kpi-val" id="ptKpiCations" style="color: #38bdf8;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Total Anions:</span>
+          <strong class="kpi-val" id="ptKpiAnions" style="color: #f87171;">--</strong>
+        </div>
+        <div class="kpi-item">
+          <span class="kpi-label">Charge Imbalance (Δ):</span>
+          <strong class="kpi-val" id="ptKpiDiff" style="color: #f59e0b;">--</strong>
+        </div>
+        <div class="kpi-item" style="justify-content: center;">
+          <div id="ptKpiStatusBadge" class="npsh-status-badge status-safe">ELECTRICALLY BALANCED</div>
+        </div>
+      </div>
+
+      <!-- Lab Sub-Navigation Tabs -->
+      <div class="pt-tabs-bar">
+        <button class="pt-tab-btn active" data-pt-tab="periodic">
+          🔬 118-Element Periodic Table
+        </button>
+        <button class="pt-tab-btn" data-pt-tab="cation_anion">
+          ⚖️ Cation-Anion Balance Solver (Problem #92)
+        </button>
+        <button class="pt-tab-btn" data-pt-tab="radicals">
+          📋 NCEES Common Radicals & Equivalent Weights
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body pt-modal-body">
+        
+        <!-- PANE 1: PERIODIC TABLE -->
+        <div class="pt-tab-pane active" id="ptTabPane_periodic">
+          <!-- Filter & Search Bar -->
+          <div class="pt-filters-toolbar">
+            <div class="pt-search-box">
+              <span style="font-size: 1.1rem;">🔍</span>
+              <input type="text" id="ptElementSearchInput" placeholder="Search element by name, symbol, or atomic # (e.g., 'Lead', 'Pb', '82', 'Mercury', 'Hg', 'Na')...">
+            </div>
+            <div class="pt-cat-filters">
+              <button class="pt-cat-filter-btn active" data-pt-cat="ALL">All Categories</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="alkali-metal">Alkali Metals</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="alkaline-earth">Alkaline Earth</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="transition-metal">Transition Metals</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="post-transition">Post-Transition</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="metalloid">Metalloids</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="reactive-nonmetal">Nonmetals</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="halogen">Halogens</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="noble-gas">Noble Gases</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="lanthanide">Lanthanides</button>
+              <button class="pt-cat-filter-btn" data-pt-cat="actinide">Actinides</button>
+            </div>
+          </div>
+
+          <!-- Periodic Table Grid + Inspector Split -->
+          <div class="pt-layout-split">
+            <div class="pt-grid-scroll-wrapper">
+              <div class="pt-grid" id="ptElementGrid">
+                <!-- Dynamically populated by periodic_table.js -->
+              </div>
+            </div>
+            <div class="pt-inspector-wrapper" id="ptElementInspector">
+              <!-- Dynamically populated by periodic_table.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: CATION-ANION BALANCE SOLVER (PROBLEM #92) -->
+        <div class="pt-tab-pane" id="ptTabPane_cation_anion">
+          <div class="pt-cation-anion-grid">
+            
+            <!-- Left Pane: Inputs & Controls -->
+            <div class="npsh-controls-pane">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                <button id="ptLoadP92Btn" class="btn btn-sm btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; font-weight: 700;">
+                  ⚡ Load Problem #92 Exam Example
+                </button>
+                <button id="ptLoadBalancedBtn" class="btn btn-sm" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981;">
+                  🌊 Balanced River Water Preset
+                </button>
+                <button id="ptCopyReportBtn" class="btn btn-sm btn-outline">
+                  📋 Copy Balance Report
+                </button>
+              </div>
+
+              <!-- Cations Input Box -->
+              <div class="pt-ion-box cations">
+                <h4 style="margin: 0 0 0.75rem 0; color: #38bdf8; display: flex; align-items: center; justify-content: space-between;">
+                  <span>➕ Measured Cations (mg/L)</span>
+                  <span style="font-size: 0.8rem; color: var(--text-secondary);">EW = MW / |z|</span>
+                </h4>
+                
+                <div class="pt-ion-row">
+                  <label for="p92_na">Sodium (Na⁺) [EW = 23.00]:</label>
+                  <input type="number" id="p92_na" value="23.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_na_meq">1.00 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_ca">Calcium (Ca²⁺) [EW = 20.05]:</label>
+                  <input type="number" id="p92_ca" value="40.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_ca_meq">2.00 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_mg">Magnesium (Mg²⁺) [EW = 12.15]:</label>
+                  <input type="number" id="p92_mg" value="12.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_mg_meq">0.99 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_k">Potassium (K⁺) [EW = 39.10]:</label>
+                  <input type="number" id="p92_k" value="0.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_k_meq">0.00 meq/L</span>
+                </div>
+
+                <div class="pt-ion-total-row">
+                  <strong>Total Cations:</strong>
+                  <strong style="color: #38bdf8;" id="res_sum_cations">3.99 meq/L</strong>
+                </div>
+              </div>
+
+              <!-- Anions Input Box -->
+              <div class="pt-ion-box anions" style="margin-top: 1rem;">
+                <h4 style="margin: 0 0 0.75rem 0; color: #f87171; display: flex; align-items: center; justify-content: space-between;">
+                  <span>➖ Measured Anions (mg/L)</span>
+                  <span style="font-size: 0.8rem; color: var(--text-secondary);">EW = MW / |z|</span>
+                </h4>
+                
+                <div class="pt-ion-row">
+                  <label for="p92_cl">Chloride (Cl⁻) [EW = 35.45]:</label>
+                  <input type="number" id="p92_cl" value="35.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_cl_meq">0.99 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_so4">Sulfate (SO₄²⁻) [EW = 48.03]:</label>
+                  <input type="number" id="p92_so4" value="48.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_so4_meq">1.00 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_no3_n">Nitrate as N (NO₃⁻-N) [EW = 14.01]:</label>
+                  <input type="number" id="p92_no3_n" value="14.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_no3_n_meq">1.00 meq/L</span>
+                </div>
+                <div class="pt-ion-row">
+                  <label for="p92_alk">Alkalinity as CaCO₃ [EW = 50.04]:</label>
+                  <input type="number" id="p92_alk" value="150.0" step="0.1" class="pt-ion-input">
+                  <span class="pt-ion-meq" id="res_alk_meq">3.00 meq/L</span>
+                </div>
+
+                <div class="pt-ion-total-row">
+                  <strong>Total Anions:</strong>
+                  <strong style="color: #f87171;" id="res_sum_anions">5.99 meq/L</strong>
+                </div>
+              </div>
+
+              <!-- Quick Math Summary -->
+              <div class="pt-summary-metrics" style="margin-top: 1rem;">
+                <div class="pt-metric-chip">
+                  <span>Charge Difference |C - A|:</span>
+                  <strong id="res_diff_meq">2.00 meq/L</strong>
+                </div>
+                <div class="pt-metric-chip">
+                  <span>Normalized % Imbalance:</span>
+                  <strong id="res_pct_diff" style="color: #f59e0b;">20.0%</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Pane: Status & KaTeX Derivations -->
+            <div class="npsh-charts-pane">
+              <div id="ptBalanceStatus" style="margin-bottom: 1rem;">
+                <!-- Dynamically populated -->
+              </div>
+              <div id="ptMathContainer" class="helical-steps-container">
+                <!-- Dynamically populated with KaTeX -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANE 3: NCEES RADICALS TABLE -->
+        <div class="pt-tab-pane" id="ptTabPane_radicals">
+          <div class="pt-radicals-wrapper">
+            <div style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+              Reference: <strong>NCEES PE Reference Handbook § 6</strong> & <strong>PE Environmental Reference Manual p. 30</strong>.<br>
+              Equivalent Weight formula: \( \text{Equivalent Weight (mg/meq)} = \frac{\text{Formula Weight (g/mol)}}{|\text{Valence Charge } z|} \).
+            </div>
+            <div class="table-responsive">
+              <table class="pt-radicals-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Ion / Radical</th>
+                    <th>Chemical Name</th>
+                    <th>MW (g/mol)</th>
+                    <th>Valence (|z|)</th>
+                    <th>Eq. Weight (mg/meq)</th>
+                    <th>NCEES PE Water Engineering Relevance</th>
+                  </tr>
+                </thead>
+                <tbody id="ptRadicalsTbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="app-footer">
     SolvedIn6 PE Exam Practice Problem Portal • Water Resources & Environmental Engineering • Built for PE Licensure Preparation
@@ -1340,6 +1576,7 @@
   <script src="civil_toolbox.js"></script>
   <script src="stormwater_calculator.js"></script>
   <script src="consolidation_calculator.js"></script>
+  <script src="periodic_table.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

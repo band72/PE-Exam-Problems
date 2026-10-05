@@ -117,7 +117,7 @@ def build_master_workbook(output_path):
     style_header_banner(ws1, 'SOLVEDIN6 • MASTER CIVIL ENGINEERING COMPANION WORKBOOK',
                         'Comprehensive Engineering Design Solvers • NCEES PE Reference Handbook, ACI 318, AASHTO, FHWA, USDA TR-55')
 
-    style_section(ws1, 4, '1. WORKBOOK NAVIGATION & MODULE DIRECTORY (21 WORKSHEETS)')
+    style_section(ws1, 4, '1. WORKBOOK NAVIGATION & MODULE DIRECTORY (22 WORKSHEETS)')
     headers1 = ['Sheet Name', 'Discipline / Domain', 'NCEES & Standard References', 'Scope & Engineering Capabilities']
     style_table_headers(ws1, 5, headers1)
 
@@ -142,6 +142,7 @@ def build_master_workbook(output_path):
         ('NPSH & Pump Cavitation', 'Hydraulics & Pumping Systems', 'NCEES § 6.3.8.6 • Hydraulic Institute Standards', 'Atmospheric pressure vs altitude, vapor pressure vs temperature, suction pipe Hazen-Williams friction & minor losses, NPSHa, NPSHr, NCEES max lift Hs'),
         ('Stormwater & TR-55 CN', 'Hydrology & Stormwater Management', 'USDA NRCS TR-55 • NCEES § 6.3.3', 'Hydrologic Soil Groups A-D, composite Curve Number CN, S, Ia, direct runoff Q = (P-0.2S)^2/(P+0.8S), TR-55 detention ratio Vs/Vr, drawdown orifice do'),
         ('Consolidation & Surcharge', 'Geotechnical Soil Mechanics', 'NCEES § 3.3 & § 3.4 • Terzaghi 1-D', 'Time rate of consolidation, single vs double drainage (Hdr), Terzaghi Tv, preload surcharge design, required soil weight & fill thickness to eliminate settlement'),
+        ('Periodic Table & Chemistry', 'Water Chemistry & Treatment', 'NCEES § 6.1 • Periodic Table & Radicals', '118 elements, atomic weights, common water treatment radicals, equivalent weights EW = MW/|z|, Problem #92 cation-anion balance solver & stoichiometric ratios'),
     ]
 
     for idx, row_vals in enumerate(toc_data, start=6):
@@ -1308,6 +1309,98 @@ def build_master_workbook(output_path):
                     {'values': ['Post-Construction Residual Settlement', 0.00, 'inches', 'Target = 0.00 inches (Fully dissipated)', 'PASS - SETTLEMENT ELIMINATED']},
                     {'values': ["Preconsolidation Stress Created (σ'_p)", '=B12 + B19 + B33', 'psf', 'Maximum past effective stress induced by preload', '-'], 'format': '#,##0.0'},
                     {'values': ['Overconsolidation Ratio (OCR)', '=(B12 + B19 + B33) / (B12 + B19)', '-', "OCR = (σ'v0 + Δσp + Δσs) / (σ'v0 + Δσp)", '=IF(((B12+B19+B33)/(B12+B19))>1.0, "PASS - OVERCONSOLIDATED STATE ACHIEVED", "FAIL - UNDERCONSOLIDATED")'], 'is_check': True, 'format': '0.00'}
+                ]
+            }
+        ]
+    )
+
+
+    # =========================================================
+    # TAB 22: PERIODIC TABLE & WATER CHEMISTRY LAB
+    # =========================================================
+    create_calc_sheet(
+        'Periodic Table & Chemistry',
+        'SOLVEDIN6 CIVIL MASTER TOOLBOX - TAB 22: PERIODIC TABLE & WATER CHEMISTRY LAB',
+        'NCEES PE Reference Handbook § 6.1 • Periodic Table, Equivalent Weights & Problem #92 Cation-Anion Balance Solver',
+        [
+            {
+                'title': '1. COMMON NCEES WATER & ENVIRONMENTAL ELEMENTS & ATOMIC WEIGHTS',
+                'headers': ['Element Name', 'Symbol', 'Atomic No. (Z)', 'Atomic Weight (g/mol)', 'Common Valence', 'Primary Environmental Engineering Application'],
+                'rows': [
+                    {'values': ['Hydrogen', 'H', 1, 1.008, '+1', 'pH definition, acid-base equilibrium, hydration reactions'], 'format': '0.000'},
+                    {'values': ['Carbon', 'C', 6, 12.011, '+4, -4', 'Carbonate equilibrium, alkalinity, BOD/COD organic carbon'], 'format': '0.000'},
+                    {'values': ['Nitrogen', 'N', 7, 14.007, '-3 to +5', 'Nutrient, Ammonia, Nitrite, Nitrate (MCL = 10 mg/L as N), TKN'], 'format': '0.000'},
+                    {'values': ['Oxygen', 'O', 8, 15.999, '-2', 'Dissolved oxygen (DO), oxidation-reduction, aeration, ozone'], 'format': '0.000'},
+                    {'values': ['Sodium', 'Na', 11, 22.990, '+1', 'Major cation, Sodium Adsorption Ratio (SAR), ion exchange'], 'format': '0.000'},
+                    {'values': ['Magnesium', 'Mg', 12, 24.305, '+2', 'Secondary hardness contributor, excess lime softening precipitation'], 'format': '0.000'},
+                    {'values': ['Aluminum', 'Al', 13, 26.982, '+3', 'Coagulation with alum [Al2(SO4)3·14H2O], sweep flocculation'], 'format': '0.000'},
+                    {'values': ['Phosphorus', 'P', 15, 30.974, '+5', 'Limiting nutrient, orthophosphate, biological phosphorus removal'], 'format': '0.000'},
+                    {'values': ['Sulfur', 'S', 16, 32.060, '-2 to +6', 'Sulfate salinity, hydrogen sulfide odor/corrosion, acid mine drainage'], 'format': '0.000'},
+                    {'values': ['Chlorine', 'Cl', 17, 35.453, '-1', 'Disinfection (free/combined chlorine), chloride salinity, CT credit'], 'format': '0.000'},
+                    {'values': ['Potassium', 'K', 19, 39.098, '+1', 'Agricultural runoff nutrient, major intracellular cation'], 'format': '0.000'},
+                    {'values': ['Calcium', 'Ca', 20, 40.078, '+2', 'Primary water hardness cation, lime softening [Ca(OH)2], scaling'], 'format': '0.000'},
+                    {'values': ['Iron', 'Fe', 26, 55.845, '+2, +3', 'Ferric chloride coagulant, red water aesthetic secondary MCL (0.3 mg/L)'], 'format': '0.000'},
+                    {'values': ['Copper', 'Cu', 29, 63.546, '+1, +2', 'Lead and Copper Rule (Action Level = 1.3 mg/L), pipe corrosion'], 'format': '0.000'},
+                    {'values': ['Arsenic', 'As', 33, 74.922, '+3, +5', 'Toxic carcinogen, Primary MCL = 0.010 mg/L, arsenite vs arsenate'], 'format': '0.000'},
+                    {'values': ['Lead', 'Pb', 82, 207.200, '+2, +4', 'Toxic neurotoxin, Lead and Copper Rule (Action Level = 0.015 mg/L)'], 'format': '0.000'}
+                ]
+            },
+            {
+                'title': '2. COMMON WATER TREATMENT RADICALS & EQUIVALENT WEIGHTS (EW = MW / |z|)',
+                'headers': ['Radical / Chemical Formula', 'Common Radical Name', 'Molecular Weight (g/mol)', 'Absolute Valence |z|', 'Equivalent Weight (g/eq)', 'Water Treatment & Chemistry Function'],
+                'rows': [
+                    {'values': ['H⁺', 'Hydrogen Ion', 1.008, 1, '=C25 / D25', 'Acidity, hydronium ion activity, pH = -log10[H+]'], 'format': '0.000'},
+                    {'values': ['OH⁻', 'Hydroxide', 17.007, 1, '=C26 / D26', 'Basicity, caustic soda NaOH, lime softening precipitant'], 'format': '0.000'},
+                    {'values': ['Ca²⁺', 'Calcium Cation', 40.078, 2, '=C27 / D27', 'Hardness, CaCO3 precipitation at pH ~9.3 in softening'], 'format': '0.000'},
+                    {'values': ['Mg²⁺', 'Magnesium Cation', 24.305, 2, '=C28 / D28', 'Hardness, Mg(OH)2 precipitation at pH ~10.8 (excess lime)'], 'format': '0.000'},
+                    {'values': ['Na⁺', 'Sodium Cation', 22.990, 1, '=C29 / D29', 'Soluble monovalent cation, cation-exchange softening regenerant'], 'format': '0.000'},
+                    {'values': ['HCO₃⁻', 'Bicarbonate', 61.017, 1, '=C30 / D30', 'Natural alkalinity buffer in pH range 4.5 to 8.3'], 'format': '0.000'},
+                    {'values': ['CO₃²⁻', 'Carbonate', 60.009, 2, '=C31 / D31', 'High-pH alkalinity buffer, soda ash (Na2CO3) addition'], 'format': '0.000'},
+                    {'values': ['SO₄²⁻', 'Sulfate', 96.064, 2, '=C32 / D32', 'Non-carbonate hardness counter-ion, alum coagulation byproduct'], 'format': '0.000'},
+                    {'values': ['Cl⁻', 'Chloride', 35.453, 1, '=C33 / D33', 'Conservative tracer, saline intrusion, secondary MCL = 250 mg/L'], 'format': '0.000'},
+                    {'values': ['NO₃⁻', 'Nitrate', 62.005, 1, '=C34 / D34', 'Methemoglobinemia contaminant, primary MCL = 10 mg/L as N'], 'format': '0.000'},
+                    {'values': ['PO₄³⁻', 'Orthophosphate', 94.971, 3, '=C35 / D35', 'Nutrient, lead/copper corrosion inhibitor film former'], 'format': '0.000'},
+                    {'values': ['CaCO₃', 'Calcium Carbonate', 100.087, 2, '=C36 / D36', 'Standard universal basis for hardness & alkalinity (EW = 50.04)'], 'format': '0.000'}
+                ]
+            },
+            {
+                'title': '3. CATION-ANION CHARGE BALANCE SOLVER (PROBLEM #92 LIVE EXAM CASE)',
+                'headers': ['Water Quality Ion Parameter', 'Measured Conc. (mg/L)', 'Valence |z|', 'Formula Weight (g/mol)', 'Equivalent Wt (mg/meq)', 'Normality (meq/L)', 'Ion Type'],
+                'rows': [
+                    {'values': ['Calcium (Ca²⁺)', 40.08, 2, 40.078, '=D40 / C40', '=B40 / E40', 'Cation (+)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Magnesium (Mg²⁺)', 24.31, 2, 24.305, '=D41 / C41', '=B41 / E41', 'Cation (+)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Sodium (Na⁺)', 0.00, 1, 22.990, '=D42 / C42', '=B42 / E42', 'Cation (+)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Potassium (K⁺)', 0.00, 1, 39.098, '=D43 / C43', '=B43 / E43', 'Cation (+)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['TOTAL MEASURED CATIONS (Σ Cations)', '=SUM(F40:F43)', 'meq/L', 'Σ (mg/L / EW) for all cations', '-', '=B44', 'Total Cations'], 'is_total': True, 'format': '0.00'},
+                    {'values': ['Bicarbonate (HCO₃⁻)', 183.00, 1, 61.017, '=D45 / C45', '=B45 / E45', 'Anion (-)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Sulfate (SO₄²⁻)', 96.06, 2, 96.064, '=D46 / C46', '=B46 / E46', 'Anion (-)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Chloride (Cl⁻)', 35.45, 1, 35.453, '=D47 / C47', '=B47 / E47', 'Anion (-)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['Nitrate (NO₃⁻)', 0.00, 1, 62.005, '=D48 / C48', '=B48 / E48', 'Anion (-)'], 'is_input': True, 'format': '0.00'},
+                    {'values': ['TOTAL MEASURED ANIONS (Σ Anions)', '=SUM(F45:F48)', 'meq/L', 'Σ (mg/L / EW) for all anions', '-', '=B49', 'Total Anions'], 'is_total': True, 'format': '0.00'}
+                ]
+            },
+            {
+                'title': '4. CHARGE BALANCE VERIFICATION & ERROR TOLERANCE (NCEES CRITERIA)',
+                'headers': ['Electro-Neutrality Metric', 'Calculated Value', 'Units', 'Standard Criterion / Formula', 'Design Status / Exam Check'],
+                'rows': [
+                    {'values': ['Total Cation Equivalent Concentration', '=B44', 'meq/L', 'Σ Cations from Section 3', '-'], 'format': '0.00'},
+                    {'values': ['Total Anion Equivalent Concentration', '=B49', 'meq/L', 'Σ Anions from Section 3', '-'], 'format': '0.00'},
+                    {'values': ['Net Absolute Charge Difference (|ΣC - ΣA|)', '=ABS(B53 - B54)', 'meq/L', '|Σ Cations - Σ Anions|', '-'], 'format': '0.00'},
+                    {'values': ['Normalized Charge Balance Error (% E_cb)', '=(B55 / (B53 + B54)) * 100', '%', 'E_cb = |ΣC - ΣA| / (ΣC + ΣA) × 100%', '-'], 'format': '0.00'},
+                    {'values': ['Standard Permissible Balance Error Limit', 5.0, '%', 'Standard acceptable analytical threshold = ±5.0%', '-'], 'is_input': True, 'format': '0.0'},
+                    {'values': ['ELECTRO-NEUTRALITY CODE CHECK', '=IF(B56<=B57, "BALANCED (Within ±5%)", IF(B53>B54, "NOT BALANCED (Cations Higher)", "NOT BALANCED (Anions Higher)"))', '-', 'NCEES Problem #92 Diagnostic Check', '=IF(B56<=B57, "PASS - BALANCED WATER ANALYSIS", "FAIL - ANALYSIS UNBALANCED")'], 'is_check': True}
+                ]
+            },
+            {
+                'title': '5. HARDNESS & STOICHIOMETRIC REAGENTS (AS CaCO3 EQUIVALENTS)',
+                'headers': ['Water Chemistry Parameter', 'Design Value', 'Units', 'Governing Stoichiometric Equation'],
+                'rows': [
+                    {'values': ['Total Hardness (TH) as CaCO₃', '=(F40 + F41) * 50.0435', 'mg/L as CaCO₃', 'TH = (meq/L Ca²⁺ + meq/L Mg²⁺) × EW(CaCO₃)'], 'format': '0.00'},
+                    {'values': ['Calcium Hardness (CH) as CaCO₃', '=F40 * 50.0435', 'mg/L as CaCO₃', 'CH = meq/L Ca²⁺ × 50.0435 mg/meq'], 'format': '0.00'},
+                    {'values': ['Magnesium Hardness (MH) as CaCO₃', '=F41 * 50.0435', 'mg/L as CaCO₃', 'MH = meq/L Mg²⁺ × 50.0435 mg/meq'], 'format': '0.00'},
+                    {'values': ['Total Alkalinity (Alk) as CaCO₃', '=F45 * 50.0435', 'mg/L as CaCO₃', 'Alk = meq/L HCO₃⁻ × 50.0435 mg/meq (pH 4.5-8.3)'], 'format': '0.00'},
+                    {'values': ['Carbonate Hardness (CH)', '=MIN(B62, B65)', 'mg/L as CaCO₃', 'CH = min(Total Hardness, Total Alkalinity)'], 'format': '0.00'},
+                    {'values': ['Non-Carbonate Hardness (NCH)', '=MAX(0, B62 - B65)', 'mg/L as CaCO₃', 'NCH = max(0, Total Hardness - Total Alkalinity)'], 'format': '0.00'}
                 ]
             }
         ]

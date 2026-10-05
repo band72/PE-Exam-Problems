@@ -61586,6 +61586,7 @@
     "duration_formatted": "08:51",
     "problem_statement": "For a given 1.5 mile section of road, two 12 foot wide lanes are being studied to review their pollutant contribution to a local water source. Local regulations limit pollutant concentrations and runoff to 2 mg per liter for inorganic contaminants and 3 mg per liter for organic contaminants. Due to local traffic patterns, the pollutants in the following table are accumulating on the road at the provided rates. From the information given, would either the inorganic or organic compounds cause a violation of local water quality standards during a 1-in storm? Assume the entire rainfall becomes runoff and that no other sources contribute to the receiving water body.  So this problem has a long problem statement, but it's essentially asking us to find the concentrations of the inorganic contaminants and organic contaminants respectively and then compare them to the provided limits. Let's do this in the following steps. First, let's note that Hg, mercury, and PB lead are our inorganic contaminants. Nitrogen N and phosphorus P are our organic contaminants. Both the civil and environmental reference manuals have periodic tables in them if you need to look these up. And both manuals also mention that mercury is Hg in the conversion factor section. So let's get into our steps.",
     "ncees_search_terms": [
+      "Periodic Table / Heavy Metals / Inorganic Pollutants",
       "Traffic Volume / ADT / Design Hourly Volume"
     ],
     "solution_steps": [
@@ -62806,13 +62807,16 @@
     "topic": "Water Sample Cation-Anion Balance (Milliequivalents)",
     "discipline": "Environmental",
     "playlists": [
-      "Environmental"
+      "Environmental",
+      "Water Resources"
     ],
     "category": "Water Resources",
     "duration": 509,
     "duration_formatted": "08:29",
     "problem_statement": "A water sample has the following composition given in the table provided. Based on the difference between the sum of the cations ions and the sum of the annions in miller equivalents per liter, is the water electrically balanced or should the sample be reviewed again? Our options are yes, the water is balanced, no the cations ions are higher, no the annions are higher or not enough information. So in this video, we're going to calculate the difference between the sum of the cations ions and the sum of the annions in a water sample. We're given the concentrations of several ions in mg per liter. That's mg over l. And our job is to convert those into mill equivalents per liter or meq l so that we can compare the total positive charges the cations ions with the total negative charges the annions. Since the problem is asking for the difference between the sum of the cations and annions, we are in the realm of a charge balance problem. That means that we should be expressing all of our ions in mill equivalents per liter as noted by the problem and we should be using the equivalence weights based on the ionic charge. In other words, this is not a problem where we are going to be using redux electrons or redux reactions. To solve this problem, you could go to the periodic table in the reference manual to get some of the information that you might need about each chemical. Page 30 of the reference manual also has data on selected elements, radicals, and compounds. In this case, the atomic weight and the equivalent weight for some of the chemicals that we're going to be solving for in our problem. Rather than use the equivalent weight directly from page 30, we're going to find the equivalent weight based on the atomic weight and the charge of the electron. So that no matter what chemical is given, you'll be able to solve it on the exam. So we can see here that we've got sodium, calcium, and magnesium all with positive charged electrons. These are going to be our cations ions. We then have chloride, sulfate, nitrate expressed as nitrogen and alkalinity expressed as Ca3 or calcium carbonate. These are what we need to solve our problem. The BOD5, the dissolved organic carbon and the algae count are extraneous information and just here to confuse you. So.",
     "ncees_search_terms": [
+      "Periodic Table / Elements / Cation-Anion Balance",
+      "Equivalent Weights / Milliequivalents / Water Chemistry",
       "BOD5 / Ultimate BOD / Kinetic Decay",
       "Water Hardness / Lime-Soda Softening"
     ],
